@@ -12,8 +12,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item mx-2">
-                    <a class="nav-link hover-line" th:href="@{/items}">Inventari</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle hover-line" href="#" id="inventoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Inventari
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="inventoryDropdown">
+                        <li><a class="dropdown-item" th:href="@{/items/lleida}">Lleida</a></li>
+                        <li><a class="dropdown-item" th:href="@{/items/barcelona}">Barcelona</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link hover-line" th:href="@{/purchases}">Compres</a>
