@@ -1,9 +1,9 @@
 package gestioepis.repositories;
 
-import gestioepis.models.DeliveryNote;
+import gestioepis.models.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeliveryNoteRepository extends JpaRepository<DeliveryNote, Long> {
+public interface LocationRepository extends JpaRepository<Location, Long> {
 }

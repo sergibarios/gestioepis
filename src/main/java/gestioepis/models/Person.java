@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +16,6 @@ public class Category {
 
     private String name;
 
-    @OneToMany(mappedBy = "category")
-    private List<ClothingItem> clothingItems;
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    private List<Handover> handovers;
 }
