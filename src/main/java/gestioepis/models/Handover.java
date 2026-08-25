@@ -1,5 +1,4 @@
 package gestioepis.models;
-// albarà
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,20 +9,18 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryNote {
+public class Handover {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate deliveryDate;
-
-    private String filePath;
+    private LocalDate handoverDate;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_order_id")
-    private PurchaseOrder purchaseOrder;
+    @JoinColumn(name = "person_id")
+    private Person person;
 
-    @OneToMany(mappedBy = "deliveryNote")
-    private List<ClothingItem> receivedItems;
+    @OneToMany(mappedBy = "handover")
+    private List<ClothingItem> handedItems;
 }
