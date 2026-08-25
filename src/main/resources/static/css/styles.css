@@ -203,3 +203,112 @@ button:hover, .btn:hover {
     background-color: #2a2a2a !important;
     color: #ffb300 !important;
 }
+
+.hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    background-color: #1e1e1e !important;
+    cursor: pointer;
+}
+
+.hover-scale:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(255, 179, 0, 0.15);
+    background-color: #252525 !important;
+}
+
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.3s ease;
+}
+
+.hover-scale:hover .icon-wrapper {
+    transform: scale(1.15) rotate(10deg);
+}
+
+.action-card p {
+    color: #a0a0a0 !important;
+}
+
+.text-muted {
+    color: #a0a0a0 !important;
+}
+
+.card-title {
+    color: #a0a0a0 !important;
+}
+
+.search-input {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    padding: 12px 15px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+.search-input::placeholder {
+    color: #888888;
+}
+
+.search-container .input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.search-container .input-group-text {
+    display: flex;
+    align-items: center;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 0;
+}
+
+.search-container .search-input {
+    flex: 1 1 auto;
+    width: 1%; /* truc perquè l'input no forci el seu 100% i respecti el flex */
+    margin-bottom: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.25);
+    border-radius: 6px;
+}
+
+.search-results-dropdown {
+    background-color: #1e1e1e;
+    border: 1px solid #333333;
+    z-index: 1050;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    background-color: transparent !important;
+    border: none;
+    border-bottom: 1px solid #2a2a2a;
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+    cursor: pointer;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #2a2a2a !important;
+    padding-left: 1.5rem !important;
+}
+
+.search-badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+.badge-item { background-color: rgba(255, 179, 0, 0.15); color: #ffb300; }
+.badge-order { background-color: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
+.badge-handover { background-color: rgba(25, 135, 84, 0.15); color: #198754; }
