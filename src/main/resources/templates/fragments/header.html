@@ -6,7 +6,7 @@
         <a href="https://www.voltes.com" target="_blank" class="d-flex align-items-center ms-3 me-4 hover-line">
             <img th:src="@{/images/voltes.png}" alt="Logo" style="height: 40px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
         </a>
-        <a class="navbar-brand me-4 hover-line" th:href="@{/static}">GestioEPIs</a>
+        <a class="navbar-brand me-4 hover-line" th:href="@{/}">GestioEPIs</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -17,15 +17,16 @@
                         Inventari
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="inventoryDropdown">
-                        <li><a class="dropdown-item" th:href="@{/items/lleida}">Lleida</a></li>
-                        <li><a class="dropdown-item" th:href="@{/items/barcelona}">Barcelona</a></li>
+                        <li><a class="dropdown-item" th:href="@{/inventory}">Tot l'Inventari</a></li>
+                        <li><a class="dropdown-item" th:href="@{/inventory/lleida}">Lleida</a></li>
+                        <li><a class="dropdown-item" th:href="@{/inventory/barcelona}">Barcelona</a></li>
                     </ul>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link hover-line" th:href="@{/purchases}">Compres</a>
                 </li>
                 <li class="nav-item mx-2">
-                    <a class="nav-link hover-line" th:href="@{/purchases_orders}">Comandes</a>
+                    <a class="nav-link hover-line" th:href="@{/purchase-orders}">Comandes</a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link hover-line" th:href="@{/handovers}">Entregues</a>

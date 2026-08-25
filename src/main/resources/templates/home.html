@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gestió Inventari EPI's</title>
+    <title>Gestió EPI's</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
@@ -12,44 +12,121 @@
 </head>
 <body>
 
+<!-- Capsalera -->
 <div th:replace="~{fragments/header :: navbar}"></div>
 
 <div class="container mt-5">
-    <h1>Kinder Bueno</h1>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
-    <p>240 probando</p>
+    <!-- stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
+                <div class="card-body d-flex flex-column justify-content-between p-3">
+                    <h5 class="card-title mb-2 fs-5">Estoc Total</h5>
+                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${totalStock}">0</h2>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-3">
+            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
+                <div class="card-body d-flex flex-column justify-content-between p-3">
+                    <h5 class="card-title mb-2 fs-5">Alertes d'Estoc Baix</h5>
+                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${lowStockAlerts}">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
+                <div class="card-body d-flex flex-column justify-content-between p-3">
+                    <h5 class="card-title mb-2 fs-5">Comandes Pendents</h5>
+                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${pendingOrders}">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
+                <div class="card-body d-flex flex-column justify-content-between p-3">
+                    <h5 class="card-title mb-2 fs-5">Entregues Avui</h5>
+                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${deliveriesToday}">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accions raapides -->
+    <div class="row mt-5">
+        <h4 class="mb-4 text-white">Accions Ràpides</h4>
+
+        <div class="col-md-6 mb-3">
+            <a th:href="@{/handovers/new}" class="card border-0 hover-scale text-decoration-none action-card">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="icon-wrapper bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center me-4">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Nova Entrega</h5>
+                        <p class="text-muted mb-0">Registra Una Nova Entrega de Material</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <a th:href="@{/items/new}" class="card border-0 hover-scale text-decoration-none action-card">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="icon-wrapper bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center me-4">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5 8.186 1.113zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.239zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Afegeix a l'Inventari</h5>
+                        <p class="text-muted mb-0">Registra Nou Material al Sistema</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Activitat recetn -->
+    <div class="row mt-5 mb-5">
+        <h4 class="mb-4 text-white">Activitat Recent</h4>
+
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="background-color: #1e1e1e; border-radius: 8px; overflow: hidden;">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0" style="background-color: #1e1e1e;">
+                        <thead>
+                        <tr>
+                            <th class="py-3 px-4 border-bottom border-secondary">Data</th>
+                            <th class="py-3 px-4 border-bottom border-secondary">Persona</th>
+                            <th class="py-3 px-4 border-bottom border-secondary text-end">Acció</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="handover : ${recentActivity}">
+                            <td class="py-3 px-4" th:text="${handover.handoverDate}"></td>
+                            <td class="py-3 px-4" th:text="${handover.person.name}"></td>
+                            <td class="py-3 px-4 text-end text-success, color: #a0a0a0">Entrega de Material</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(recentActivity)}">
+                            <td colspan="3" class="text-center text-muted py-5">No s'ha Trobat Activitat Recent...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/home.js}"></script>
-
+<script th:src="@{/js/animations.js}"></script>
 </body>
 </html>
