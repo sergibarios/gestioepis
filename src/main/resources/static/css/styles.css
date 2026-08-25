@@ -153,7 +153,7 @@ button:hover, .btn:hover {
     text-shadow: 0 0 8px rgba(255, 179, 0, 0.4);
 }
 
-.hover-line::after {
+.hover-line::before {
     content: "";
     position: absolute;
     width: 0;
@@ -164,7 +164,7 @@ button:hover, .btn:hover {
     transition: width 0.3s ease-in-out;
 }
 
-.hover-line:hover::after {
+.hover-line:hover::before {
     width: 100%;
 }
 
@@ -176,4 +176,30 @@ button:hover, .btn:hover {
 .hover-line:hover img {
     transform: scale(1.05);
     filter: drop-shadow(0 0 6px rgba(255, 179, 0, 0.7)) brightness(1.1);
+}
+
+.dropdown-menu-dark {
+    background-color: #1e1e1e !important;
+    border: 1px solid #333333 !important;
+
+    border-radius: 0 0 6px 6px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+    min-width: 0 !important;
+
+    margin-top: 8px !important;
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: #e0e0e0 !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    text-align: center;
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: #2a2a2a !important;
+    color: #ffb300 !important;
 }
