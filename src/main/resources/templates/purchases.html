@@ -8,20 +8,159 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/styles.css?v=2}">
+    <link rel="stylesheet" th:href="@{/css/styles.css?v=3}">
+    <style>
+        tr:target {
+            background-color: rgba(255, 179, 0, 0.15) !important;
+            outline: 1px solid #ffb300;
+        }
+    </style>
 </head>
 <body>
-<!-- Capsalera -->
+
 <div th:replace="~{fragments/header :: navbar}"></div>
 
-<!-- Cerca -->
-<div class="container mt-4">
-    <div th:replace="~{fragments/search :: searchBar}"></div>
-    <h2 class="text-white mt-4">Compres</h2>
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4 toolbar-row">
+        <h2 class="text-white m-0 toolbar-title">Compres</h2>
+        <div class="search-wrapper-inline">
+            <div th:replace="~{fragments/search :: searchBar}"></div>
+        </div>
+        <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addPurchaseModal">
+            <span class="btn-icon">+</span> Afegir Compra
+        </button>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="background-color: #1e1e1e; border-radius: 8px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" style="background-color: #1e1e1e;">
+                <thead>
+                <tr>
+                    <th class="py-3 px-4 border-bottom border-secondary">Data</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Referència Albarà</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Comanda Associada</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Fitxer</th>
+                    <th class="py-3 px-4 border-bottom border-secondary text-end">Accions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="note : ${deliveryNotes}" th:id="'note-' + ${note.id}">
+                    <td class="py-3 px-4 align-middle" th:text="${note.deliveryDate}"></td>
+                    <td class="py-3 px-4 align-middle fw-bold" th:text="${note.reference}"></td>
+                    <td class="py-3 px-4 align-middle">
+                        <div th:if="${note.purchaseOrder != null}" class="p-2 rounded d-inline-block" style="background-color: #2a2a2a; border: 1px solid #444;">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <a th:href="@{/purchase-orders#order-{id}(id=${note.purchaseOrder.id})}" class="fw-bold text-decoration-none hover-line" style="color: #ffb300; font-size: 0.85rem;" th:text="${note.purchaseOrder.name}"></a>
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{/purchase-orders#order-{id}(id=${note.purchaseOrder.id})}" class="btn btn-sm btn-outline-light btn-note-action">Veure</a>
+                                </div>
+                            </div>
+                        </div>
+                        <span th:if="${note.purchaseOrder == null}" class="text-muted">Sense comanda</span>
+                    </td>
+                    <td class="py-3 px-4 align-middle">
+                        <div class="d-flex gap-2" th:if="${note.filePath != null}">
+                            <a th:href="@{${note.filePath}}" target="_blank" class="btn btn-sm btn-outline-light">Obrir</a>
+                            <a th:href="@{${note.filePath}}" download class="btn btn-sm btn-outline-light">Baixar</a>
+                        </div>
+                        <span th:if="${note.filePath == null}" class="text-muted">Sense fitxer</span>
+                    </td>
+                    <td class="py-3 px-4 align-middle">
+                        <div class="d-flex justify-content-end align-items-center gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editPurchaseModal' + ${note.id}">Editar</button>
+                            <a th:href="@{/delivery-notes/delete/{id}(id=${note.id})}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(deliveryNotes)}">
+                    <td colspan="5" class="text-center text-muted py-5">No s'han trobat compres o albarans.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<div class="modal fade" id="addPurchaseModal" tabindex="-1" aria-labelledby="addPurchaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title text-white" id="addPurchaseModalLabel">Nova Compra / Albarà</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/delivery-notes}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="redirectSource" value="purchases">
+                <div class="modal-body p-4">
+                    <label for="reference">Referència de l'Albarà</label>
+                    <input type="text" id="reference" name="reference" required>
+
+                    <label for="deliveryDate">Data d'Entrega / Recepció</label>
+                    <input type="date" id="deliveryDate" name="deliveryDate" required>
+
+                    <label for="orderId">Comanda Associada</label>
+                    <select id="orderId" name="orderId">
+                        <option value="">-- Sense comanda associada --</option>
+                        <option th:each="order : ${orders}" th:value="${order.id}" th:text="${order.name + ' (' + order.orderDate + ')'}"></option>
+                    </select>
+
+                    <label for="file">Fitxer de l'Albarà (PDF / Imatge)</label>
+                    <input type="file" id="file" name="file" accept=".pdf,.png,.jpg,.jpeg">
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                    <button type="submit" class="btn">Desar Compra</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block th:each="note : ${deliveryNotes}">
+    <div class="modal fade" th:id="'editPurchaseModal' + ${note.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Editar Compra / Albarà</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/delivery-notes/edit/{id}(id=${note.id})}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body p-4">
+                        <label for="editReference">Referència de l'Albarà</label>
+                        <input type="text" id="editReference" name="reference" th:value="${note.reference}" required>
+
+                        <label for="editDeliveryDate">Data d'Entrega / Recepció</label>
+                        <input type="date" id="editDeliveryDate" name="deliveryDate" th:value="${note.deliveryDate}" required>
+
+                        <label for="editOrderId">Comanda Associada</label>
+                        <select id="editOrderId" name="orderId">
+                            <option value="">-- Sense comanda associada --</option>
+                            <option th:each="order : ${orders}"
+                                    th:value="${order.id}"
+                                    th:text="${order.name + ' (' + order.orderDate + ')'}"
+                                    th:selected="${note.purchaseOrder != null and note.purchaseOrder.id == order.id}">
+                            </option>
+                        </select>
+
+                        <label for="editFile">Actualitzar Fitxer (Opcional)</label>
+                        <input type="file" id="editFile" name="file" accept=".pdf,.png,.jpg,.jpeg">
+
+                        <div th:if="${note.filePath != null}" class="mt-3">
+                            <span class="text-muted" style="font-size: 0.85rem;">Fitxer actual: </span>
+                            <a th:href="@{${note.filePath}}" target="_blank" class="text-info text-decoration-none" style="font-size: 0.85rem;">Veure fitxer actual</a>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn">Actualitzar Compra</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/search.js}"></script>
-
+<script th:src="@{/js/buttons.js}"></script>
 </body>
 </html>

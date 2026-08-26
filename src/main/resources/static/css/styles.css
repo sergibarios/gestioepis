@@ -503,6 +503,6 @@ input:focus, select:focus, textarea:focus {
     font-weight: 700;
 }
 
-.badge-item { background-color: rgba(255, 179, 0, 0.15); color: #ffb300; }
-.badge-order { background-color: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
-.badge-handover { background-color: rgba(25, 135, 84, 0.15); color: #198754; }
+.badge-article { background-color: rgba(255, 179, 0, 0.15); color: #ffb300; }
+.badge-comanda { background-color: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
+.badge-entrega { background-color: rgba(25, 135, 84, 0.15); color: #198754; }
