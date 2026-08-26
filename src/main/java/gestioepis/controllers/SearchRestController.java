@@ -2,12 +2,13 @@ package gestioepis.controllers;
 
 import gestioepis.dto.SearchResultDTO;
 import gestioepis.models.ClothingItem;
+import gestioepis.models.Handover;
 import gestioepis.models.PurchaseOrder;
 import gestioepis.repositories.ClothingItemRepository;
+import gestioepis.repositories.HandoverRepository;
 import gestioepis.repositories.PurchaseOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/search")
 public class SearchRestController {
 
     @Autowired
@@ -24,16 +24,23 @@ public class SearchRestController {
     @Autowired
     private PurchaseOrderRepository purchaseOrderRepository;
 
-    @GetMapping
-    public List<SearchResultDTO> search(@RequestParam String q) {
+    @Autowired
+    private HandoverRepository handoverRepository;
+
+    @GetMapping("/api/search")
+    public List<SearchResultDTO> search(@RequestParam(required = false, defaultValue = "") String q) {
         List<SearchResultDTO> results = new ArrayList<>();
+
+        if (q == null || q.trim().isEmpty()) {
+            return results;
+        }
 
         List<ClothingItem> items = clothingItemRepository.findByCodeContainingIgnoreCaseOrSubcategoryContainingIgnoreCase(q, q);
         for (ClothingItem item : items) {
             results.add(new SearchResultDTO(
                     item.getSubcategory() + " - " + item.getBrand(),
-                    "Code: " + item.getCode() + " | Size: " + item.getItemSize(),
-                    "Item",
+                    "Codi: " + item.getCode() + " | Size: " + item.getItemSize(),
+                    "Article",
                     "/items/" + item.getId()
             ));
         }
@@ -42,9 +49,19 @@ public class SearchRestController {
         for (PurchaseOrder order : orders) {
             results.add(new SearchResultDTO(
                     order.getName(),
-                    "Date: " + order.getOrderDate(),
-                    "Order",
-                    "/orders/" + order.getId()
+                    "Data: " + order.getOrderDate(),
+                    "Comanda",
+                    "/purchase-orders"
+            ));
+        }
+
+        List<Handover> handovers = handoverRepository.findByPersonNameContainingIgnoreCase(q);
+        for (Handover handover : handovers) {
+            results.add(new SearchResultDTO(
+                    handover.getPerson().getName(),
+                    "Data: " + handover.getHandoverDate(),
+                    "Entrega",
+                    "/handovers"
             ));
         }
 

@@ -16,11 +16,6 @@ public class PageController {
     @Autowired
     private ClothingItemRepository clothingItemRepository;
 
-    @GetMapping("/purchases")
-    public String purchases() {
-        return "purchases";
-    }
-
     @GetMapping("/handovers")
     public String handovers() {
         return "handovers";
