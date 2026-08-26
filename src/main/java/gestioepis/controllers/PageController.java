@@ -21,11 +21,6 @@ public class PageController {
         return "purchases";
     }
 
-    @GetMapping("/purchase-orders")
-    public String purchaseOrders() {
-        return "purchase-orders";
-    }
-
     @GetMapping("/handovers")
     public String handovers() {
         return "handovers";

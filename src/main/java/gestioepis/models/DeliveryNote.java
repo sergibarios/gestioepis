@@ -1,13 +1,16 @@
 package gestioepis.models;
-// albarà
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliveryNote {
@@ -15,6 +18,8 @@ public class DeliveryNote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String reference;
 
     private LocalDate deliveryDate;
 

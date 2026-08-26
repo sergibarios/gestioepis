@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Long> {
     List<PurchaseOrder> findByNameContainingIgnoreCase(String name);
+    List<PurchaseOrder> findAllByOrderByOrderDateDesc();
 }
