@@ -1,6 +1,7 @@
 package gestioepis.services;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,12 +16,16 @@ import java.util.UUID;
 @Service
 public class FileSystemStorageService implements StorageService {
 
-    private final Path rootLocation = Paths.get("uploads");
+    @Value("${app.storage.location:uploads}")
+    private String storageLocation;
+
+    private Path rootLocation;
 
     @PostConstruct
     @Override
     public void init() {
         try {
+            this.rootLocation = Paths.get(storageLocation);
             Files.createDirectories(rootLocation);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -31,9 +31,30 @@
                 <li class="nav-item mx-2">
                     <a class="nav-link hover-line" th:href="@{/handovers}">Entregues</a>
                 </li>
+                <li class="nav-item mx-2">
+                    <a class="nav-link hover-line" th:href="@{/settings}">Configuració</a>
+                </li>
             </ul>
         </div>
+        <button type="button" id="closeAppBtn" class="btn btn-outline-danger btn-sm ms-3" style="display:none;">Tancar aplicació</button>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/desktop/shutdown', { method: 'OPTIONS' })
+                .then(function (res) {
+                    if (res.status === 404) return;
+                    var btn = document.getElementById('closeAppBtn');
+                    btn.style.display = '';
+                    btn.addEventListener('click', function () {
+                        if (!confirm("Vols tancar l'aplicació? Caldrà tornar a obrir-la per fer-la servir de nou.")) return;
+                        fetch('/desktop/shutdown', { method: 'POST' }).finally(function () {
+                            document.body.innerHTML = '<div style="padding:60px;text-align:center;color:#fff;font-family:sans-serif;">Aplicació tancada. Ja pots tancar aquesta pestanya.</div>';
+                        });
+                    });
+                })
+                .catch(function () {});
+        });
+    </script>
 </nav>
 </body>
 </html>

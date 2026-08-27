@@ -46,3 +46,4 @@ data/
 .claude/
 
 run-dev.bat
+package-desktop.bat

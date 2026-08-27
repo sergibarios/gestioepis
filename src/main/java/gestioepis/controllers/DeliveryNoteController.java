@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,11 +29,25 @@ public class DeliveryNoteController {
     private StorageService storageService;
 
     @GetMapping("/purchases")
-    public String purchases(Model model) {
-        List<DeliveryNote> deliveryNotes = deliveryNoteRepository.findAllByOrderByDeliveryDateDesc();
+    public String purchases(
+            @RequestParam(required = false, defaultValue = "desc") String sort,
+            @RequestParam(required = false) Long orderId,
+            Model model) {
+        List<DeliveryNote> deliveryNotes = "asc".equalsIgnoreCase(sort)
+                ? deliveryNoteRepository.findAllByOrderByDeliveryDateAsc()
+                : deliveryNoteRepository.findAllByOrderByDeliveryDateDesc();
+
+        if (orderId != null) {
+            deliveryNotes = deliveryNotes.stream()
+                    .filter(n -> n.getPurchaseOrder() != null && orderId.equals(n.getPurchaseOrder().getId()))
+                    .toList();
+        }
+
         List<PurchaseOrder> orders = purchaseOrderRepository.findAllByOrderByOrderDateDesc();
         model.addAttribute("deliveryNotes", deliveryNotes);
         model.addAttribute("orders", orders);
+        model.addAttribute("sort", sort);
+        model.addAttribute("selectedOrderId", orderId);
         return "purchases";
     }
 
@@ -42,7 +57,8 @@ public class DeliveryNoteController {
             @RequestParam String reference,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deliveryDate,
             @RequestParam(required = false) MultipartFile file,
-            @RequestParam(required = false, defaultValue = "purchases") String redirectSource) {
+            @RequestParam(required = false, defaultValue = "purchases") String redirectSource,
+            RedirectAttributes redirectAttributes) {
 
         DeliveryNote note = new DeliveryNote();
         note.setReference(reference);
@@ -59,6 +75,7 @@ public class DeliveryNoteController {
         }
 
         deliveryNoteRepository.save(note);
+        redirectAttributes.addFlashAttribute("toastMessage", "Albarà afegit correctament.");
 
         if ("orders".equalsIgnoreCase(redirectSource)) {
             return "redirect:/purchase-orders";
@@ -72,7 +89,8 @@ public class DeliveryNoteController {
             @RequestParam(required = false) Long orderId,
             @RequestParam String reference,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deliveryDate,
-            @RequestParam(required = false) MultipartFile file) {
+            @RequestParam(required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes) {
 
         DeliveryNote note = deliveryNoteRepository.findById(id).orElseThrow();
         note.setReference(reference);
@@ -91,12 +109,14 @@ public class DeliveryNoteController {
         }
 
         deliveryNoteRepository.save(note);
+        redirectAttributes.addFlashAttribute("toastMessage", "Albarà actualitzat correctament.");
         return "redirect:/purchases";
     }
 
-    @GetMapping("/delivery-notes/delete/{id}")
-    public String deleteDeliveryNote(@PathVariable Long id) {
+    @PostMapping("/delivery-notes/delete/{id}")
+    public String deleteDeliveryNote(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         deliveryNoteRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("toastMessage", "Albarà eliminat.");
         return "redirect:/purchases";
     }
 }

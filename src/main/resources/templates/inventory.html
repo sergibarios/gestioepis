@@ -8,19 +8,236 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/styles.css?v=2}">
+    <link rel="stylesheet" th:href="@{/css/styles.css?v=4}">
 </head>
 <body>
 <div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/toast :: toast}"></div>
 
-<div class="container mt-4">
-    <div th:replace="~{fragments/search :: searchBar}"></div>
-    <div class="d-flex justify-content-between align-items-center mt-4">
-        <h2 class="text-white m-0">Inventari - <span th:text="${currentLocation}">Tot</span></h2>
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3 toolbar-row">
+        <h2 class="text-white m-0 toolbar-title d-flex align-items-center gap-2">
+            Inventari
+            <span th:if="${currentLocationKey == 'lleida'}" class="location-badge location-badge-lleida">Lleida</span>
+            <span th:if="${currentLocationKey == 'barcelona'}" class="location-badge location-badge-barcelona">Barcelona</span>
+        </h2>
+        <div class="search-wrapper-inline">
+            <div th:replace="~{fragments/search :: searchBar}"></div>
+        </div>
+        <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addItemModal">
+            <span class="btn-icon">+</span> Afegir article
+        </button>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 filter-row">
+        <div class="location-filter-group">
+            <a th:href="@{/inventory}"
+               class="location-filter-btn"
+               th:classappend="${currentLocationKey == 'all'} ? ' active' : ''">Tot</a>
+            <a th:href="@{/inventory/lleida}"
+               class="location-filter-btn location-filter-lleida"
+               th:classappend="${currentLocationKey == 'lleida'} ? ' active' : ''">Lleida</a>
+            <a th:href="@{/inventory/barcelona}"
+               class="location-filter-btn location-filter-barcelona"
+               th:classappend="${currentLocationKey == 'barcelona'} ? ' active' : ''">Barcelona</a>
+        </div>
+
+        <form method="get" id="categoryFilterForm"
+              th:action="${currentLocationKey == 'all'} ? @{/inventory} : @{/inventory/{loc}(loc=${currentLocationKey})}">
+            <select id="categoryFilter" name="categoryId" class="filter-select" onchange="document.getElementById('categoryFilterForm').submit()">
+                <option value="">Totes les categories</option>
+                <option th:each="cat : ${categories}"
+                        th:value="${cat.id}"
+                        th:text="${cat.name}"
+                        th:selected="${selectedCategoryId != null and selectedCategoryId == cat.id}"></option>
+            </select>
+        </form>
+    </div>
+
+    <div class="card border-0 shadow-sm table-card">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead>
+                <tr>
+                    <th class="py-3 px-4 border-bottom border-secondary">Codi</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Subcategoria</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Categoria</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Talla</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Marca</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Preu</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Ubicació</th>
+                    <th class="py-3 px-4 border-bottom border-secondary text-end">Accions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${items}" th:id="'item-' + ${item.id}">
+                    <td class="py-3 px-4 align-middle fw-bold" th:text="${item.code}"></td>
+                    <td class="py-3 px-4 align-middle" th:text="${item.subcategory != null ? item.subcategory.name : '-'}"></td>
+                    <td class="py-3 px-4 align-middle" th:text="${item.category != null ? item.category.name : '-'}"></td>
+                    <td class="py-3 px-4 align-middle" th:text="${item.itemSize}"></td>
+                    <td class="py-3 px-4 align-middle" th:text="${item.brand}"></td>
+                    <td class="py-3 px-4 align-middle" th:text="${#numbers.formatDecimal(item.price, 1, 2) + ' €'}"></td>
+                    <td class="py-3 px-4 align-middle">
+                        <span th:if="${item.location != null}"
+                              class="location-badge"
+                              th:classappend="${#strings.toLowerCase(item.location.name) == 'lleida'} ? ' location-badge-lleida' : (${#strings.toLowerCase(item.location.name) == 'barcelona'} ? ' location-badge-barcelona' : ' location-badge-default')"
+                              th:text="${item.location.name}"></span>
+                        <span th:if="${item.location == null}" class="text-muted">Sense ubicació</span>
+                    </td>
+                    <td class="py-3 px-4 align-middle">
+                        <div class="d-flex justify-content-end align-items-center gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editItemModal' + ${item.id}">Editar</button>
+                            <form th:action="@{/inventory/delete/{id}(id=${item.id})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(items)}">
+                    <td colspan="8" class="text-center text-muted py-5">No s'han trobat articles.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
+<div class="modal fade" id="addItemModal" data-quick-action="add" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title text-white" id="addItemModalLabel">Nou Article</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/inventory}" method="post">
+                <div class="modal-body p-4">
+                    <label for="code">Codi</label>
+                    <input type="text" id="code" name="code" required>
+
+                    <label for="categoryId">Categoria</label>
+                    <select id="categoryId" name="categoryId" data-cascade-subcategory="subcategoryId" required>
+                        <option value="">-- Selecciona categoria --</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                    </select>
+
+                    <label for="subcategoryId">Subcategoria</label>
+                    <select id="subcategoryId" name="subcategoryId" required>
+                        <option value="">-- Selecciona categoria primer --</option>
+                        <option th:each="sub : ${subcategories}"
+                                th:value="${sub.id}"
+                                th:text="${sub.name}"
+                                th:data-category-id="${sub.category != null ? sub.category.id : ''}"></option>
+                    </select>
+
+                    <label for="itemSize">Talla</label>
+                    <input type="text" id="itemSize" name="itemSize" required>
+
+                    <label for="brand">Marca</label>
+                    <input type="text" id="brand" name="brand" required>
+
+                    <label for="price">Preu (€)</label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" required>
+
+                    <label for="locationId">Ubicació</label>
+                    <select id="locationId" name="locationId" required>
+                        <option th:each="loc : ${locations}" th:value="${loc.id}" th:text="${loc.name}"></option>
+                    </select>
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                    <button type="submit" class="btn">Desar Article</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<th:block th:each="item : ${items}">
+    <div class="modal fade" th:id="'editItemModal' + ${item.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Editar Article</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/inventory/edit/{id}(id=${item.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <label>Codi</label>
+                        <input type="text" name="code" th:value="${item.code}" required>
+
+                        <label>Categoria</label>
+                        <select name="categoryId" th:id="'editCategoryId' + ${item.id}" th:data-cascade-subcategory="'editSubcategoryId' + ${item.id}" required>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.id}"
+                                    th:text="${cat.name}"
+                                    th:selected="${item.category != null and item.category.id == cat.id}"></option>
+                        </select>
+
+                        <label>Subcategoria</label>
+                        <select name="subcategoryId" th:id="'editSubcategoryId' + ${item.id}" required>
+                            <option th:each="sub : ${subcategories}"
+                                    th:value="${sub.id}"
+                                    th:text="${sub.name}"
+                                    th:data-category-id="${sub.category != null ? sub.category.id : ''}"
+                                    th:selected="${item.subcategory != null and item.subcategory.id == sub.id}"></option>
+                        </select>
+
+                        <label>Talla</label>
+                        <input type="text" name="itemSize" th:value="${item.itemSize}" required>
+
+                        <label>Marca</label>
+                        <input type="text" name="brand" th:value="${item.brand}" required>
+
+                        <label>Preu (€)</label>
+                        <input type="number" name="price" step="0.01" min="0" th:value="${item.price}" required>
+
+                        <label>Ubicació</label>
+                        <select name="locationId" required>
+                            <option th:each="loc : ${locations}"
+                                    th:value="${loc.id}"
+                                    th:text="${loc.name}"
+                                    th:selected="${item.location != null and item.location.id == loc.id}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn">Actualitzar Article</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/search.js}"></script>
+<script th:src="@{/js/buttons.js}"></script>
+<script>
+    function filterSubcategories(categorySelectId, subcategorySelectId, keepValue) {
+        const categorySelect = document.getElementById(categorySelectId);
+        const subcategorySelect = document.getElementById(subcategorySelectId);
+        const selectedCategoryId = categorySelect.value;
+        const previousValue = subcategorySelect.value;
+
+        Array.from(subcategorySelect.options).forEach(function (option) {
+            if (!option.value) return;
+            const matches = option.getAttribute('data-category-id') === selectedCategoryId;
+            option.hidden = !matches;
+            option.disabled = !matches;
+        });
+
+        subcategorySelect.value = keepValue ? previousValue : '';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-cascade-subcategory]').forEach(function (categorySelect) {
+            const subSelectId = categorySelect.getAttribute('data-cascade-subcategory');
+            filterSubcategories(categorySelect.id, subSelectId, true);
+            categorySelect.addEventListener('change', function () {
+                filterSubcategories(categorySelect.id, subSelectId, false);
+            });
+        });
+    });
+</script>
 </body>
 </html>

@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,9 +35,23 @@ public class HandoverController {
     private StorageService storageService;
 
     @GetMapping("/handovers")
-    public String handovers(Model model){
-        List<Handover> handovers = handoverRepository.findAllByOrderByHandoverDateDesc();
+    public String handovers(
+            @RequestParam(required = false, defaultValue = "desc") String sort,
+            @RequestParam(required = false) Long personId,
+            Model model){
+        List<Handover> handovers = "asc".equalsIgnoreCase(sort)
+                ? handoverRepository.findAllByOrderByHandoverDateAsc()
+                : handoverRepository.findAllByOrderByHandoverDateDesc();
+
+        if (personId != null) {
+            handovers = handovers.stream()
+                    .filter(h -> h.getPerson() != null && personId.equals(h.getPerson().getId()))
+                    .toList();
+        }
+
         model.addAttribute("handovers", handovers);
+        model.addAttribute("sort", sort);
+        model.addAttribute("selectedPersonId", personId);
 
         List<ClothingItem> clothingItems = clothingItemRepository.findByHandoverIsNull();
         model.addAttribute("items", clothingItems);
@@ -50,7 +65,8 @@ public class HandoverController {
     public String saveHandover(
         @RequestParam Long personId,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate handoverDate,
-        @RequestParam List<Long> itemIds
+        @RequestParam List<Long> itemIds,
+        RedirectAttributes redirectAttributes
     ){
         Handover handover = new Handover();
         Person person = personRepository.findById(personId).orElseThrow();
@@ -65,6 +81,7 @@ public class HandoverController {
             clothingItemRepository.save(item);
         }
 
+        redirectAttributes.addFlashAttribute("toastMessage", "Entrega registrada correctament.");
         return "redirect:/handovers";
     }
 

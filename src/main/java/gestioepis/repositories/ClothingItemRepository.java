@@ -8,8 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ClothingItemRepository extends JpaRepository<ClothingItem, Long> {
-    long countByHandoverIsNull();
-    List<ClothingItem> findByCodeContainingIgnoreCaseOrSubcategoryContainingIgnoreCase(String code, String subcategory);
+    List<ClothingItem> findByCodeContainingIgnoreCaseOrSubcategoryNameContainingIgnoreCase(String code, String subcategoryName);
     List<ClothingItem> findByLocationNameIgnoreCase(String locationName);
     List<ClothingItem> findByHandoverIsNull();
 }

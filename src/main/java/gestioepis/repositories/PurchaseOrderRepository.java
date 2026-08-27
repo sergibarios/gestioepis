@@ -10,4 +10,7 @@ import java.util.List;
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Long> {
     List<PurchaseOrder> findByNameContainingIgnoreCase(String name);
     List<PurchaseOrder> findAllByOrderByOrderDateDesc();
+    List<PurchaseOrder> findAllByOrderByOrderDateAsc();
+    long countByDeliveryNotesIsEmpty();
+    List<PurchaseOrder> findTop5ByOrderByOrderDateDesc();
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,9 +24,27 @@ public class PurchaseOrderController {
     private StorageService storageService;
 
     @GetMapping("/purchase-orders")
-    public String purchaseOrders(Model model) {
-        List<PurchaseOrder> orders = purchaseOrderRepository.findAllByOrderByOrderDateDesc();
+    public String purchaseOrders(
+            @RequestParam(required = false, defaultValue = "desc") String sort,
+            @RequestParam(required = false) String status,
+            Model model) {
+        List<PurchaseOrder> orders = "asc".equalsIgnoreCase(sort)
+                ? purchaseOrderRepository.findAllByOrderByOrderDateAsc()
+                : purchaseOrderRepository.findAllByOrderByOrderDateDesc();
+
+        if ("pending".equalsIgnoreCase(status)) {
+            orders = orders.stream()
+                    .filter(o -> o.getDeliveryNotes() == null || o.getDeliveryNotes().isEmpty())
+                    .toList();
+        } else if ("received".equalsIgnoreCase(status)) {
+            orders = orders.stream()
+                    .filter(o -> o.getDeliveryNotes() != null && !o.getDeliveryNotes().isEmpty())
+                    .toList();
+        }
+
         model.addAttribute("orders", orders);
+        model.addAttribute("sort", sort);
+        model.addAttribute("selectedStatus", status);
         return "purchase-orders";
     }
 
@@ -34,7 +53,8 @@ public class PurchaseOrderController {
             @RequestParam String name,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate orderDate,
             @RequestParam(required = false) String comments,
-            @RequestParam(required = false) MultipartFile file) {
+            @RequestParam(required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes) {
 
         PurchaseOrder order = new PurchaseOrder();
         order.setName(name);
@@ -50,12 +70,14 @@ public class PurchaseOrderController {
         }
 
         purchaseOrderRepository.save(order);
+        redirectAttributes.addFlashAttribute("toastMessage", "Comanda afegida correctament.");
         return "redirect:/purchase-orders";
     }
 
-    @GetMapping("/purchase-orders/delete/{id}")
-    public String deletePurchaseOrder(@PathVariable Long id) {
+    @PostMapping("/purchase-orders/delete/{id}")
+    public String deletePurchaseOrder(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         purchaseOrderRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("toastMessage", "Comanda eliminada.");
         return "redirect:/purchase-orders";
     }
 
@@ -65,7 +87,8 @@ public class PurchaseOrderController {
             @RequestParam String name,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate orderDate,
             @RequestParam(required = false) String comments,
-            @RequestParam(required = false) MultipartFile file) {
+            @RequestParam(required = false) MultipartFile file,
+            RedirectAttributes redirectAttributes) {
 
         PurchaseOrder order = purchaseOrderRepository.findById(id).orElseThrow();
         order.setName(name);
@@ -81,6 +104,7 @@ public class PurchaseOrderController {
         }
 
         purchaseOrderRepository.save(order);
+        redirectAttributes.addFlashAttribute("toastMessage", "Comanda actualitzada correctament.");
         return "redirect:/purchase-orders";
     }
 }

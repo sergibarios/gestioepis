@@ -14,5 +14,6 @@ public interface HandoverRepository extends JpaRepository<Handover, Long> {
     List<Handover> findTop5ByOrderByHandoverDateDesc();
     List<Handover> findByPersonNameContainingIgnoreCase(String name);
     List<Handover> findAllByOrderByHandoverDateDesc();
+    List<Handover> findAllByOrderByHandoverDateAsc();
 
 }

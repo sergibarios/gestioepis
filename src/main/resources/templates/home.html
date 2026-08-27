@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/styles.css?v=2}">
+    <link rel="stylesheet" th:href="@{/css/styles.css?v=4}">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
             <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
                 <div class="card-body d-flex flex-column justify-content-between p-3">
                     <h5 class="card-title mb-2 fs-5">Estoc Total</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${totalStock}">0</h2>
+                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${totalStock}">0</h2>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
             <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
                 <div class="card-body d-flex flex-column justify-content-between p-3">
                     <h5 class="card-title mb-2 fs-5">Alertes d'Estoc Baix</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${lowStockAlerts}">0</h2>
+                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${lowStockAlerts}">0</h2>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
             <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
                 <div class="card-body d-flex flex-column justify-content-between p-3">
                     <h5 class="card-title mb-2 fs-5">Comandes Pendents</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${pendingOrders}">0</h2>
+                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${pendingOrders}">0</h2>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
             <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
                 <div class="card-body d-flex flex-column justify-content-between p-3">
                     <h5 class="card-title mb-2 fs-5">Entregues Avui</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0" th:text="${deliveriesToday}">0</h2>
+                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${deliveriesToday}">0</h2>
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
         <h4 class="mb-4 text-white">Accions Ràpides</h4>
 
         <div class="col-md-6 mb-3">
-            <a th:href="@{/handovers/new}" class="card border-0 hover-scale text-decoration-none action-card">
+            <a th:href="@{/handovers(open='add')}" class="card border-0 hover-scale text-decoration-none action-card">
                 <div class="card-body d-flex align-items-center p-4">
                     <div class="icon-wrapper bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center me-4">
                         <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
@@ -77,7 +77,7 @@
         </div>
 
         <div class="col-md-6 mb-3">
-            <a th:href="@{/items/new}" class="card border-0 hover-scale text-decoration-none action-card">
+            <a th:href="@{/inventory(open='add')}" class="card border-0 hover-scale text-decoration-none action-card">
                 <div class="card-body d-flex align-items-center p-4">
                     <div class="icon-wrapper bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center me-4">
                         <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
@@ -87,6 +87,42 @@
                     <div>
                         <h5 class="text-white mb-1">Afegeix a l'Inventari</h5>
                         <p class="text-muted mb-0">Registra Nou Material al Sistema</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <a th:href="@{/purchase-orders(open='add')}" class="card border-0 hover-scale text-decoration-none action-card">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="icon-wrapper bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center me-4">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 16 16">
+                            <rect x="3" y="1.5" width="10" height="13" rx="1.2"/>
+                            <line x1="5.5" y1="5" x2="10.5" y2="5"/>
+                            <line x1="5.5" y1="8" x2="10.5" y2="8"/>
+                            <line x1="5.5" y1="11" x2="8.5" y2="11"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Nova Comanda</h5>
+                        <p class="text-muted mb-0">Registra Una Nova Comanda de Compra</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <a th:href="@{/purchases(open='add')}" class="card border-0 hover-scale text-decoration-none action-card">
+                <div class="card-body d-flex align-items-center p-4">
+                    <div class="icon-wrapper bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center me-4">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.3" viewBox="0 0 16 16">
+                            <path d="M1.5 8h4l1 2h3l1-2h4"/>
+                            <path d="M2.5 3.5h11L15 8v4.5a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V8l1.5-4.5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="text-white mb-1">Nova Compra / Albarà</h5>
+                        <p class="text-muted mb-0">Registra la Recepció d'un Albarà</p>
                     </div>
                 </div>
             </a>
@@ -104,15 +140,19 @@
                         <thead>
                         <tr>
                             <th class="py-3 px-4 border-bottom border-secondary">Data</th>
-                            <th class="py-3 px-4 border-bottom border-secondary">Persona</th>
-                            <th class="py-3 px-4 border-bottom border-secondary text-end">Acció</th>
+                            <th class="py-3 px-4 border-bottom border-secondary">Descripció</th>
+                            <th class="py-3 px-4 border-bottom border-secondary text-end">Tipus</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="handover : ${recentActivity}">
-                            <td class="py-3 px-4" th:text="${handover.handoverDate}"></td>
-                            <td class="py-3 px-4" th:text="${handover.person.name}"></td>
-                            <td class="py-3 px-4 text-end text-success, color: #a0a0a0">Entrega de Material</td>
+                        <tr th:each="activity : ${recentActivity}">
+                            <td class="py-3 px-4" th:text="${activity.date}"></td>
+                            <td class="py-3 px-4" th:text="${activity.description}"></td>
+                            <td class="py-3 px-4 text-end">
+                                <span class="search-badge"
+                                      th:classappend="'badge-' + ${#strings.toLowerCase(#strings.replace(activity.type, 'à', 'a'))}"
+                                      th:text="${activity.type}"></span>
+                            </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(recentActivity)}">
                             <td colspan="3" class="text-center text-muted py-5">No s'ha Trobat Activitat Recent...</td>

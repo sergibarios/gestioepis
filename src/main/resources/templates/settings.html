@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestió EPI's - Configuració</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/styles.css?v=4}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: navbar}"></div>
+<div th:replace="~{fragments/toast :: toast}"></div>
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-4 toolbar-row">
+        <h2 class="text-white m-0 toolbar-title">Configuració</h2>
+    </div>
+
+    <div th:if="${error != null}" class="alert alert-danger mb-4" role="alert">
+        No es pot eliminar aquest element perquè encara està en ús en altres registres (articles, entregues, etc.).
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm settings-card">
+                <h4 class="text-white mb-3">Categories</h4>
+                <form th:action="@{/settings/categories}" method="post" class="settings-form">
+                    <input type="text" name="name" placeholder="Nova categoria" required>
+                    <button type="submit" class="btn btn-add">Afegir</button>
+                </form>
+                <input type="text" class="settings-search-input" placeholder="Cerca una categoria..." data-target-list="categoriesList" autocomplete="off">
+                <ul class="settings-list" id="categoriesList">
+                    <li th:each="cat : ${categories}" th:data-search="${#strings.toLowerCase(cat.name)}">
+                        <span th:text="${cat.name}"></span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editCategoryModal' + ${cat.id}">Editar</button>
+                            <form th:action="@{/settings/categories/delete/{id}(id=${cat.id})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li th:if="${#lists.isEmpty(categories)}" class="text-muted">Cap categoria encara.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm settings-card">
+                <h4 class="text-white mb-3">Subcategories</h4>
+                <form th:action="@{/settings/subcategories}" method="post" class="settings-form">
+                    <input type="text" name="name" placeholder="Nova subcategoria" required>
+                    <select name="categoryId" required>
+                        <option value="">Categoria...</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                    </select>
+                    <button type="submit" class="btn btn-add">Afegir</button>
+                </form>
+                <input type="text" class="settings-search-input" placeholder="Cerca per subcategoria o categoria (ex. calçat)..." data-target-list="subcategoriesList" autocomplete="off">
+                <ul class="settings-list" id="subcategoriesList">
+                    <li th:each="sub : ${subcategories}"
+                        th:data-search="${#strings.toLowerCase(sub.name + ' ' + (sub.category != null ? sub.category.name : ''))}">
+                        <span th:text="${sub.name + ' (' + (sub.category != null ? sub.category.name : '-') + ')'}"></span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editSubcategoryModal' + ${sub.id}">Editar</button>
+                            <form th:action="@{/settings/subcategories/delete/{id}(id=${sub.id})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li th:if="${#lists.isEmpty(subcategories)}" class="text-muted">Cap subcategoria encara.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm settings-card">
+                <h4 class="text-white mb-3">Ubicacions</h4>
+                <form th:action="@{/settings/locations}" method="post" class="settings-form">
+                    <input type="text" name="name" placeholder="Nova ubicació" required>
+                    <input type="text" name="description" placeholder="Descripció (opcional)">
+                    <button type="submit" class="btn btn-add">Afegir</button>
+                </form>
+                <input type="text" class="settings-search-input" placeholder="Cerca una ubicació..." data-target-list="locationsList" autocomplete="off">
+                <ul class="settings-list" id="locationsList">
+                    <li th:each="loc : ${locations}" th:data-search="${#strings.toLowerCase(loc.name + ' ' + (loc.description != null ? loc.description : ''))}">
+                        <span th:text="${loc.name}"></span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editLocationModal' + ${loc.id}">Editar</button>
+                            <form th:action="@{/settings/locations/delete/{id}(id=${loc.id})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li th:if="${#lists.isEmpty(locations)}" class="text-muted">Cap ubicació encara.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm settings-card">
+                <h4 class="text-white mb-3">Persones</h4>
+                <form th:action="@{/settings/people}" method="post" class="settings-form">
+                    <input type="text" name="name" placeholder="Nova persona" required>
+                    <button type="submit" class="btn btn-add">Afegir</button>
+                </form>
+                <input type="text" class="settings-search-input" placeholder="Cerca una persona..." data-target-list="peopleList" autocomplete="off">
+                <ul class="settings-list" id="peopleList">
+                    <li th:each="person : ${people}" th:data-search="${#strings.toLowerCase(person.name)}">
+                        <span th:text="${person.name}"></span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editPersonModal' + ${person.id}">Editar</button>
+                            <form th:action="@{/settings/people/delete/{id}(id=${person.id})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li th:if="${#lists.isEmpty(people)}" class="text-muted">Cap persona encara.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:each="cat : ${categories}">
+    <div class="modal fade" th:id="'editCategoryModal' + ${cat.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Editar categoria</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/settings/categories/edit/{id}(id=${cat.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <label>Nom</label>
+                        <input type="text" name="name" th:value="${cat.name}" required>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn">Desar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:each="sub : ${subcategories}">
+    <div class="modal fade" th:id="'editSubcategoryModal' + ${sub.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Editar subcategoria</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/settings/subcategories/edit/{id}(id=${sub.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <label>Nom</label>
+                        <input type="text" name="name" th:value="${sub.name}" required>
+
+                        <label>Categoria</label>
+                        <select name="categoryId" required>
+                            <option th:each="cat : ${categories}"
+                                    th:value="${cat.id}"
+                                    th:text="${cat.name}"
+                                    th:selected="${sub.category != null and sub.category.id == cat.id}"></option>
+                        </select>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn">Desar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:each="loc : ${locations}">
+    <div class="modal fade" th:id="'editLocationModal' + ${loc.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Editar ubicació</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/settings/locations/edit/{id}(id=${loc.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <label>Nom</label>
+                        <input type="text" name="name" th:value="${loc.name}" required>
+
+                        <label>Descripció</label>
+                        <input type="text" name="description" th:value="${loc.description}">
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn">Desar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:each="person : ${people}">
+    <div class="modal fade" th:id="'editPersonModal' + ${person.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title text-white">Editar persona</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/settings/people/edit/{id}(id=${person.id})}" method="post">
+                    <div class="modal-body p-4">
+                        <label>Nom</label>
+                        <input type="text" name="name" th:value="${person.name}" required>
+                    </div>
+                    <div class="modal-footer border-top border-secondary">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
+                        <button type="submit" class="btn">Desar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/buttons.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.settings-search-input').forEach(function (input) {
+            const targetList = document.getElementById(input.getAttribute('data-target-list'));
+            if (!targetList) return;
+
+            input.addEventListener('input', function () {
+                const query = input.value.trim().toLowerCase();
+                targetList.querySelectorAll('li[data-search]').forEach(function (li) {
+                    li.hidden = query.length > 0 && !li.getAttribute('data-search').includes(query);
+                });
+            });
+        });
+    });
+</script>
+</body>
+</html>
