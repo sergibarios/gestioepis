@@ -16,11 +16,6 @@ public class PageController {
     @Autowired
     private ClothingItemRepository clothingItemRepository;
 
-    @GetMapping("/handovers")
-    public String handovers() {
-        return "handovers";
-    }
-
     @GetMapping("/inventory")
     public String inventoryTotal(Model model) {
         List<ClothingItem> items = clothingItemRepository.findAll();
