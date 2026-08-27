@@ -506,3 +506,137 @@ input:focus, select:focus, textarea:focus {
 .badge-article { background-color: rgba(255, 179, 0, 0.15); color: #ffb300; }
 .badge-comanda { background-color: rgba(13, 202, 240, 0.15); color: #0dcaf0; }
 .badge-entrega { background-color: rgba(25, 135, 84, 0.15); color: #198754; }
+
+/* Entregues - formulari amb cerca */
+
+.table-card {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.handover-item-chip {
+    background-color: #2a2a2a;
+    border: 1px solid #444444;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+}
+
+.select-search {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.select-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: #1e1e1e;
+    border: 1px solid #333333;
+    border-radius: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1060;
+}
+
+.select-search-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #e0e0e0;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.select-search-option:last-child {
+    border-bottom: none;
+}
+
+.select-search-option:hover {
+    background-color: #2a2a2a;
+    color: #ffb300;
+}
+
+.select-search-selected {
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 8px 12px;
+    background-color: rgba(255, 179, 0, 0.08);
+    border: 1px solid rgba(255, 179, 0, 0.35);
+    border-radius: 6px;
+    color: #ffd166;
+    font-size: 0.9rem;
+}
+
+.item-checklist-count {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+    margin-bottom: 0.5rem;
+}
+
+.item-checklist {
+    max-height: 240px;
+    overflow-y: auto;
+    border: 1px solid #444444;
+    border-radius: 6px;
+    background-color: #2a2a2a;
+    margin-bottom: 1.5rem;
+}
+
+.item-checklist-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #333333;
+}
+
+.item-checklist-row:last-child {
+    border-bottom: none;
+}
+
+.item-checklist-row input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.item-checklist-row label {
+    margin: 0;
+    font-weight: 400;
+    color: #e0e0e0;
+    cursor: pointer;
+}
+
+.handover-summary {
+    background-color: #2a2a2a;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 16px 20px;
+}
+
+.handover-summary dt {
+    color: #ffb300;
+    font-weight: 600;
+}
+
+.handover-summary dd {
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.handover-summary-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.handover-summary-items li {
+    padding: 6px 0;
+    border-bottom: 1px solid #333333;
+    color: #e0e0e0;
+}
+
+.handover-summary-items li:last-child {
+    border-bottom: none;
+}

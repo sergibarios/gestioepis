@@ -42,3 +42,7 @@ data/
 
 /uploads/
 *.pdf
+
+.claude/
+
+run-dev.bat
