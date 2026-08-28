@@ -1,0 +1,21 @@
+GESTIOEPIS - Instruccions d'us
+===============================
+
+1. Fes doble clic a "Iniciar-GestioEPIs.bat" per engegar l'aplicacio.
+   S'obrira una finestra negra (son els registres del servidor, es normal)
+   i al cap d'uns segons el navegador s'obrira sol.
+
+2. Per ATURAR l'aplicacio, fes clic al boto "Tancar aplicacio" a dalt a la
+   dreta de la propia web, o simplement tanca la finestra negra.
+
+3. Les teves dades (base de dades i documents pujats) es guarden a:
+       %USERPROFILE%\GestioEPIs
+   Fes doble clic a "Obrir-carpeta-de-dades.bat" per accedir-hi directament.
+   NO es perden en tancar l'aplicacio ni en actualitzar-la a una versio nova,
+   perque es guarden fora d'aquesta carpeta.
+
+4. NO esborris ni moguis les carpetes "app" ni "jre" d'aquesta carpeta.
+
+5. Per actualitzar l'aplicacio a una versio nova, nomes cal substituir
+   aquesta carpeta sencera per la nova (les dades es mantenen, ja que
+   viuen fora d'aqui, tal com s'explica al punt 3).
