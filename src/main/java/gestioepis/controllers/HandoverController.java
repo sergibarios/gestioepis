@@ -84,5 +84,4 @@ public class HandoverController {
         redirectAttributes.addFlashAttribute("toastMessage", "Entrega registrada correctament.");
         return "redirect:/handovers";
     }
-
 }
