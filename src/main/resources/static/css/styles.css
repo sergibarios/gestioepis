@@ -83,8 +83,6 @@ th {
     background-color: #ffb300;
     color: #121212;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 tr:hover {
@@ -779,7 +777,58 @@ tr:target {
     border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+.size-total-badge {
+    font-size: 0.95rem;
+    padding: 5px 12px;
+}
+
+.size-accordion-item {
+    border-top: 1px solid #2a2a2a;
+}
+
+.subcategory-header {
+    cursor: pointer;
+}
+
+.subcategory-header:hover {
+    background-color: #232323;
+}
+
+.size-accordion-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: rgba(255, 179, 0, 0.15);
+    color: #ffb300;
+    font-size: 0.85rem;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.subcategory-header:hover .size-accordion-chevron {
+    background-color: rgba(255, 179, 0, 0.3);
+}
+
+.subcategory-header.expanded .size-accordion-chevron {
+    transform: rotate(90deg);
+}
+
+.size-count-badge {
+    margin-left: auto;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
 /* Configuració */
+
+.settings-container {
+    max-width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .settings-card {
     background-color: #1e1e1e;
@@ -802,6 +851,26 @@ tr:target {
 
 .settings-form .btn {
     flex-shrink: 0;
+}
+
+.size-type-select {
+    flex-basis: 100%;
+}
+
+.size-checkbox-group {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin: 4px 0;
+}
+
+.size-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: #e0e0e0;
 }
 
 .settings-search-input {

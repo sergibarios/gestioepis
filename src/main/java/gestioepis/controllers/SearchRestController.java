@@ -5,6 +5,7 @@ import gestioepis.models.ClothingItem;
 import gestioepis.models.DeliveryNote;
 import gestioepis.models.Handover;
 import gestioepis.models.PurchaseOrder;
+import gestioepis.models.Subcategory;
 import gestioepis.repositories.ClothingItemRepository;
 import gestioepis.repositories.DeliveryNoteRepository;
 import gestioepis.repositories.HandoverRepository;
@@ -42,13 +43,16 @@ public class SearchRestController {
 
         List<ScoredResult> results = new ArrayList<>();
 
-        List<ClothingItem> items = clothingItemRepository.findByCodeContainingIgnoreCaseOrSubcategoryNameContainingIgnoreCase(query, query);
+        List<ClothingItem> items = clothingItemRepository.findBySubcategory_CodeContainingIgnoreCaseOrSubcategory_NameContainingIgnoreCase(query, query);
         for (ClothingItem item : items) {
-            String subcategoryName = item.getSubcategory() != null ? item.getSubcategory().getName() : "-";
-            int score = Math.min(relevanceScore(item.getCode(), query), relevanceScore(subcategoryName, query));
+            Subcategory subcategory = item.getSubcategory();
+            String subcategoryName = subcategory != null ? subcategory.getName() : "-";
+            String subcategoryCode = subcategory != null ? subcategory.getCode() : null;
+            String subcategoryBrand = subcategory != null ? subcategory.getBrand() : null;
+            int score = Math.min(relevanceScore(subcategoryCode, query), relevanceScore(subcategoryName, query));
             results.add(new ScoredResult(score, new SearchResultDTO(
-                    subcategoryName + " - " + item.getBrand(),
-                    "Codi: " + item.getCode() + " | Size: " + item.getItemSize(),
+                    subcategoryName + " - " + subcategoryBrand,
+                    "Codi: " + subcategoryCode + " | Size: " + item.getItemSize().getLabel(),
                     "Article",
                     "/inventory#item-" + item.getId()
             )));

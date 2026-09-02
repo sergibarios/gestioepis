@@ -19,11 +19,8 @@ public class ClothingItem {
 
     private double price;
 
-    private String itemSize;
-
-    private String brand;
-
-    private String code;
+    @Enumerated(EnumType.STRING)
+    private Talla itemSize;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

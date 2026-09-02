@@ -14,7 +14,7 @@
 <div th:replace="~{fragments/header :: navbar}"></div>
 <div th:replace="~{fragments/toast :: toast}"></div>
 
-<div class="container mt-4 mb-5">
+<div class="container-fluid settings-container mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4 toolbar-row">
         <h2 class="text-white m-0 toolbar-title">Configuració</h2>
     </div>
@@ -24,7 +24,60 @@
     </div>
 
     <div class="row g-4">
-        <div class="col-md-6">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm settings-card">
+                <h4 class="text-white mb-3">Subcategories</h4>
+                <form th:action="@{/settings/subcategories}" method="post" class="settings-form">
+                    <input type="text" name="name" placeholder="Nova subcategoria" required>
+                    <select name="categoryId" required>
+                        <option value="">Categoria...</option>
+                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                    </select>
+                    <input type="text" name="code" placeholder="Codi" required>
+                    <input type="text" name="brand" placeholder="Marca" required>
+                    <select name="tallaTipus" class="size-type-select" required>
+                        <option value="">Tipus de talla...</option>
+                        <option th:each="tipus : ${tallaTipusValues}" th:value="${tipus}" th:text="${tipus.label}"></option>
+                    </select>
+                    <div class="size-checkbox-group" data-sizes-for="ROMAN">
+                        <label class="size-checkbox" th:each="size : ${robaSizes}">
+                            <input type="checkbox" name="sizes" th:value="${size}">
+                            <span th:text="${size.label}"></span>
+                        </label>
+                    </div>
+                    <div class="size-checkbox-group" data-sizes-for="CALCAT">
+                        <label class="size-checkbox" th:each="size : ${calcatSizes}">
+                            <input type="checkbox" name="sizes" th:value="${size}">
+                            <span th:text="${size.label}"></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-add">Afegir</button>
+                </form>
+                <select id="subcategoryCategoryFilter" class="settings-search-input" th:if="${!#lists.isEmpty(subcategories)}">
+                    <option value="">Selecciona una categoria per veure les subcategories...</option>
+                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                </select>
+                <input type="text" class="settings-search-input" placeholder="Cerca per subcategoria o categoria (ex. calçat)..." data-target-list="subcategoriesList" autocomplete="off">
+                <ul class="settings-list" id="subcategoriesList">
+                    <li id="subcategoriesPlaceholder" class="text-muted" th:if="${!#lists.isEmpty(subcategories)}">Selecciona una categoria per veure les subcategories.</li>
+                    <li th:each="sub : ${subcategories}"
+                        hidden
+                        th:data-category-id="${sub.category != null ? sub.category.id : ''}"
+                        th:data-search="${#strings.toLowerCase(sub.name + ' ' + (sub.category != null ? sub.category.name : '') + ' ' + sub.code + ' ' + sub.brand)}">
+                        <span th:text="${sub.name + ' (' + (sub.category != null ? sub.category.name : '-') + ') — ' + sub.code + ' — ' + sub.brand}"></span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editSubcategoryModal' + ${sub.id}">Editar</button>
+                            <form th:action="@{/settings/subcategories/delete/{id}(id=${sub.id})}" method="post" class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li th:if="${#lists.isEmpty(subcategories)}" class="text-muted">Cap subcategoria encara.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm settings-card">
                 <h4 class="text-white mb-3">Categories</h4>
                 <form th:action="@{/settings/categories}" method="post" class="settings-form">
@@ -47,35 +100,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm settings-card">
-                <h4 class="text-white mb-3">Subcategories</h4>
-                <form th:action="@{/settings/subcategories}" method="post" class="settings-form">
-                    <input type="text" name="name" placeholder="Nova subcategoria" required>
-                    <select name="categoryId" required>
-                        <option value="">Categoria...</option>
-                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-                    </select>
-                    <button type="submit" class="btn btn-add">Afegir</button>
-                </form>
-                <input type="text" class="settings-search-input" placeholder="Cerca per subcategoria o categoria (ex. calçat)..." data-target-list="subcategoriesList" autocomplete="off">
-                <ul class="settings-list" id="subcategoriesList">
-                    <li th:each="sub : ${subcategories}"
-                        th:data-search="${#strings.toLowerCase(sub.name + ' ' + (sub.category != null ? sub.category.name : ''))}">
-                        <span th:text="${sub.name + ' (' + (sub.category != null ? sub.category.name : '-') + ')'}"></span>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editSubcategoryModal' + ${sub.id}">Editar</button>
-                            <form th:action="@{/settings/subcategories/delete/{id}(id=${sub.id})}" method="post" class="delete-form">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                            </form>
-                        </div>
-                    </li>
-                    <li th:if="${#lists.isEmpty(subcategories)}" class="text-muted">Cap subcategoria encara.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm settings-card">
                 <h4 class="text-white mb-3">Ubicacions</h4>
                 <form th:action="@{/settings/locations}" method="post" class="settings-form">
@@ -99,7 +124,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm settings-card">
                 <h4 class="text-white mb-3">Persones</h4>
                 <form th:action="@{/settings/people}" method="post" class="settings-form">
@@ -167,6 +192,36 @@
                                     th:text="${cat.name}"
                                     th:selected="${sub.category != null and sub.category.id == cat.id}"></option>
                         </select>
+
+                        <label>Codi</label>
+                        <input type="text" name="code" th:value="${sub.code}" required>
+
+                        <label>Marca</label>
+                        <input type="text" name="brand" th:value="${sub.brand}" required>
+
+                        <label>Tipus de talla</label>
+                        <select name="tallaTipus" class="size-type-select" required>
+                            <option value="">Tipus de talla...</option>
+                            <option th:each="tipus : ${tallaTipusValues}"
+                                    th:value="${tipus}"
+                                    th:text="${tipus.label}"
+                                    th:selected="${sub.tallaTipus == tipus}"></option>
+                        </select>
+                        <label>Talles disponibles</label>
+                        <div class="size-checkbox-group" data-sizes-for="ROMAN">
+                            <label class="size-checkbox" th:each="size : ${robaSizes}">
+                                <input type="checkbox" name="sizes" th:value="${size}"
+                                       th:checked="${sub.allowedSizes != null and sub.allowedSizes.contains(size)}">
+                                <span th:text="${size.label}"></span>
+                            </label>
+                        </div>
+                        <div class="size-checkbox-group" data-sizes-for="CALCAT">
+                            <label class="size-checkbox" th:each="size : ${calcatSizes}">
+                                <input type="checkbox" name="sizes" th:value="${size}"
+                                       th:checked="${sub.allowedSizes != null and sub.allowedSizes.contains(size)}">
+                                <span th:text="${size.label}"></span>
+                            </label>
+                        </div>
                     </div>
                     <div class="modal-footer border-top border-secondary">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
@@ -230,8 +285,44 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/buttons.js}"></script>
 <script>
+    function initSizeTypeToggle(form) {
+        const select = form.querySelector('.size-type-select');
+        const groups = form.querySelectorAll('.size-checkbox-group');
+
+        const applyVisibility = function (checkAllInMatching) {
+            const selectedType = select.value || null;
+
+            groups.forEach(function (group) {
+                const matches = group.getAttribute('data-sizes-for') === selectedType;
+                group.hidden = !matches;
+                group.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                    checkbox.disabled = !matches;
+                    if (!matches) {
+                        checkbox.checked = false;
+                    } else if (checkAllInMatching) {
+                        checkbox.checked = true;
+                    }
+                });
+            });
+        };
+
+        // Carrega inicial: respecta les talles ja marcades (edició); no en marca cap de nou
+        applyVisibility(false);
+        // Canvi manual de tipus: marca totes les talles del nou grup per defecte
+        select.addEventListener('change', function () {
+            applyVisibility(true);
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.settings-search-input').forEach(function (input) {
+        document.querySelectorAll('form').forEach(function (form) {
+            if (form.querySelector('.size-type-select')) {
+                initSizeTypeToggle(form);
+            }
+        });
+
+        document.querySelectorAll('.settings-search-input[data-target-list]').forEach(function (input) {
+            if (input.getAttribute('data-target-list') === 'subcategoriesList') return;
             const targetList = document.getElementById(input.getAttribute('data-target-list'));
             if (!targetList) return;
 
@@ -242,6 +333,32 @@
                 });
             });
         });
+
+        const categoryFilter = document.getElementById('subcategoryCategoryFilter');
+        const subcategoriesList = document.getElementById('subcategoriesList');
+        if (categoryFilter && subcategoriesList) {
+            const searchInput = subcategoriesList.parentElement.querySelector('.settings-search-input[data-target-list="subcategoriesList"]');
+            const placeholder = document.getElementById('subcategoriesPlaceholder');
+
+            const applySubcategoryFilters = function () {
+                const selectedCategoryId = categoryFilter.value;
+                const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+                const hasCategory = selectedCategoryId.length > 0;
+
+                if (placeholder) placeholder.hidden = hasCategory;
+                if (searchInput) searchInput.disabled = !hasCategory;
+
+                subcategoriesList.querySelectorAll('li[data-category-id]').forEach(function (li) {
+                    const matchesCategory = hasCategory && li.getAttribute('data-category-id') === selectedCategoryId;
+                    const matchesSearch = query.length === 0 || li.getAttribute('data-search').includes(query);
+                    li.hidden = !(matchesCategory && matchesSearch);
+                });
+            };
+
+            categoryFilter.addEventListener('change', applySubcategoryFilters);
+            if (searchInput) searchInput.addEventListener('input', applySubcategoryFilters);
+            applySubcategoryFilters();
+        }
     });
 </script>
 </body>

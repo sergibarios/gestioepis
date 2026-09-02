@@ -4,6 +4,8 @@ import gestioepis.models.Category;
 import gestioepis.models.Location;
 import gestioepis.models.Person;
 import gestioepis.models.Subcategory;
+import gestioepis.models.Talla;
+import gestioepis.models.TallaTipus;
 import gestioepis.repositories.CategoryRepository;
 import gestioepis.repositories.LocationRepository;
 import gestioepis.repositories.PersonRepository;
@@ -14,6 +16,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 public class SettingsController {
@@ -36,6 +43,9 @@ public class SettingsController {
         model.addAttribute("subcategories", subcategoryRepository.findAll());
         model.addAttribute("locations", locationRepository.findAll());
         model.addAttribute("people", personRepository.findAll());
+        model.addAttribute("tallaTipusValues", TallaTipus.values());
+        model.addAttribute("robaSizes", sizesOfType(TallaTipus.ROMAN));
+        model.addAttribute("calcatSizes", sizesOfType(TallaTipus.CALCAT));
         model.addAttribute("error", error);
         return "settings";
     }
@@ -58,6 +68,19 @@ public class SettingsController {
         return "redirect:/settings";
     }
 
+    private List<Talla> sizesOfType(TallaTipus tipus) {
+        return Arrays.stream(Talla.values()).filter(t -> t.getTipus() == tipus).toList();
+    }
+
+    private Set<Talla> toSizeSet(List<Talla> sizes, TallaTipus tallaTipus) {
+        if (sizes == null || sizes.isEmpty()) {
+            return EnumSet.noneOf(Talla.class);
+        }
+        Set<Talla> filtered = EnumSet.copyOf(sizes);
+        filtered.removeIf(size -> tallaTipus != null && size.getTipus() != tallaTipus);
+        return filtered;
+    }
+
     @PostMapping("/settings/categories/delete/{id}")
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -70,20 +93,41 @@ public class SettingsController {
     }
 
     @PostMapping("/settings/subcategories")
-    public String addSubcategory(@RequestParam String name, @RequestParam Long categoryId, RedirectAttributes redirectAttributes) {
+    public String addSubcategory(@RequestParam String name,
+                                  @RequestParam Long categoryId,
+                                  @RequestParam String brand,
+                                  @RequestParam String code,
+                                  @RequestParam(required = false) TallaTipus tallaTipus,
+                                  @RequestParam(required = false) List<Talla> sizes,
+                                  RedirectAttributes redirectAttributes) {
         Subcategory subcategory = new Subcategory();
         subcategory.setName(name);
         subcategory.setCategory(categoryRepository.findById(categoryId).orElseThrow());
+        subcategory.setBrand(brand);
+        subcategory.setCode(code);
+        subcategory.setTallaTipus(tallaTipus);
+        subcategory.setAllowedSizes(toSizeSet(sizes, tallaTipus));
         subcategoryRepository.save(subcategory);
         redirectAttributes.addFlashAttribute("toastMessage", "Subcategoria afegida.");
         return "redirect:/settings";
     }
 
     @PostMapping("/settings/subcategories/edit/{id}")
-    public String updateSubcategory(@PathVariable Long id, @RequestParam String name, @RequestParam Long categoryId, RedirectAttributes redirectAttributes) {
+    public String updateSubcategory(@PathVariable Long id,
+                                     @RequestParam String name,
+                                     @RequestParam Long categoryId,
+                                     @RequestParam String brand,
+                                     @RequestParam String code,
+                                     @RequestParam(required = false) TallaTipus tallaTipus,
+                                     @RequestParam(required = false) List<Talla> sizes,
+                                     RedirectAttributes redirectAttributes) {
         Subcategory subcategory = subcategoryRepository.findById(id).orElseThrow();
         subcategory.setName(name);
         subcategory.setCategory(categoryRepository.findById(categoryId).orElseThrow());
+        subcategory.setBrand(brand);
+        subcategory.setCode(code);
+        subcategory.setTallaTipus(tallaTipus);
+        subcategory.setAllowedSizes(toSizeSet(sizes, tallaTipus));
         subcategoryRepository.save(subcategory);
         redirectAttributes.addFlashAttribute("toastMessage", "Subcategoria actualitzada.");
         return "redirect:/settings";

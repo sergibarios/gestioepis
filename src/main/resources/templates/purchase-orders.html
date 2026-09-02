@@ -22,7 +22,7 @@
             <div th:replace="~{fragments/search :: searchBar}"></div>
         </div>
         <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addOrderModal">
-            <span class="btn-icon">+</span> Afegir Comanda
+            <span class="btn-icon">+</span> Afegir comanda
         </button>
     </div>
 
@@ -79,7 +79,7 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-sm mt-1 w-100 add-note-btn" th:data-order-id="${order.id}" data-bs-toggle="modal" data-bs-target="#addNoteModal">
-                            <span class="btn-icon">+</span> Afegir Albarà
+                            <span class="btn-icon">+</span> Afegir albarà
                         </button>
                     </td>
                     <td class="py-3 px-4 align-middle">
@@ -106,12 +106,12 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
             <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title text-white" id="addOrderModalLabel">Nova Comanda</h5>
+                <h5 class="modal-title text-white" id="addOrderModalLabel">Nova comanda</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form th:action="@{/purchase-orders}" method="post" enctype="multipart/form-data">
                 <div class="modal-body p-4">
-                    <label for="name">Nom de la Comanda / Referència</label>
+                    <label for="name">Nom de la comanda / referència</label>
                     <input type="text" id="name" name="name" required>
 
                     <label for="orderDate">Data</label>
@@ -120,12 +120,12 @@
                     <label for="comments">Comentaris</label>
                     <textarea id="comments" name="comments" rows="3"></textarea>
 
-                    <label for="file">PDF de la Comanda</label>
+                    <label for="file">PDF de la comanda</label>
                     <input type="file" id="file" name="file" accept=".pdf,.png,.jpg,.jpeg">
                 </div>
                 <div class="modal-footer border-top border-secondary">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
-                    <button type="submit" class="btn">Desar Comanda</button>
+                    <button type="submit" class="btn">Desar comanda</button>
                 </div>
             </form>
         </div>
@@ -136,22 +136,22 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
             <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title text-white" id="addNoteModalLabel">Afegir Nou Albarà</h5>
+                <h5 class="modal-title text-white" id="addNoteModalLabel">Afegir nou albarà</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form th:action="@{/delivery-notes}" method="post" enctype="multipart/form-data">
                 <div class="modal-body p-4">
                     <input type="hidden" id="noteOrderId" name="orderId">
 
-                    <label for="reference">Referència de l'Albarà</label>
+                    <label for="reference">Referència de l'albarà</label>
                     <input type="text" id="reference" name="reference" required>
 
-                    <label for="noteFile">Fitxer de l'Albarà</label>
+                    <label for="noteFile">Fitxer de l'albarà</label>
                     <input type="file" id="noteFile" name="file" accept=".pdf,.png,.jpg,.jpeg" required>
                 </div>
                 <div class="modal-footer border-top border-secondary">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
-                    <button type="submit" class="btn">Desar Albarà</button>
+                    <button type="submit" class="btn">Desar albarà</button>
                 </div>
             </form>
         </div>
@@ -163,12 +163,12 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
                 <div class="modal-header border-bottom border-secondary">
-                    <h5 class="modal-title text-white">Editar Comanda</h5>
+                    <h5 class="modal-title text-white">Editar comanda</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form th:action="@{/purchase-orders/edit/{id}(id=${order.id})}" method="post" enctype="multipart/form-data">
                     <div class="modal-body p-4">
-                        <label for="name">Nom de la Comanda / Referència</label>
+                        <label for="name">Nom de la comanda / referència</label>
                         <input type="text" name="name" th:value="${order.name}" required>
 
                         <label for="orderDate">Data</label>
@@ -177,7 +177,7 @@
                         <label for="comments">Comentaris</label>
                         <textarea name="comments" rows="3" th:text="${order.comments}"></textarea>
 
-                        <label for="file">Actualitzar PDF (Opcional)</label>
+                        <label for="file">Actualitzar PDF (opcional)</label>
                         <input type="file" name="file" accept=".pdf,.png,.jpg,.jpeg">
 
                         <div th:if="${order.filePath != null}" class="mt-3">
@@ -187,7 +187,7 @@
                     </div>
                     <div class="modal-footer border-top border-secondary">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
-                        <button type="submit" class="btn">Actualitzar Comanda</button>
+                        <button type="submit" class="btn">Actualitzar comanda</button>
                     </div>
                 </form>
             </div>

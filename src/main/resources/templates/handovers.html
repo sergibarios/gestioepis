@@ -65,7 +65,7 @@
                         <div th:if="${handover.handedItems != null and !handover.handedItems.isEmpty()}">
                             <div th:each="item : ${handover.handedItems}" class="handover-item-chip">
                                 <span class="text-white" style="font-size: 0.85rem;"
-                                      th:text="${item.code + ' - ' + (item.subcategory != null ? item.subcategory.name : '-') + ' (' + item.itemSize + ')'}"></span>
+                                      th:text="${(item.subcategory != null ? item.subcategory.code : '-') + ' - ' + (item.subcategory != null ? item.subcategory.name : '-') + ' (' + item.itemSize.label + ')'}"></span>
                             </div>
                         </div>
                     </td>
@@ -113,10 +113,10 @@
                         <div class="item-checklist" id="itemChecklist">
                             <div class="item-checklist-row"
                                  th:each="item : ${items}"
-                                 th:data-search="${#strings.toLowerCase(item.code + ' ' + (item.subcategory != null ? item.subcategory.name : '') + ' ' + item.itemSize)}">
+                                 th:data-search="${#strings.toLowerCase((item.subcategory != null ? item.subcategory.code : '') + ' ' + (item.subcategory != null ? item.subcategory.name : '') + ' ' + item.itemSize.label)}">
                                 <input type="checkbox" name="itemIds" th:value="${item.id}" th:id="'item-' + ${item.id}">
                                 <label th:for="'item-' + ${item.id}"
-                                       th:text="${item.code + ' - ' + (item.subcategory != null ? item.subcategory.name : '-') + ' (' + item.itemSize + ')'}"></label>
+                                       th:text="${(item.subcategory != null ? item.subcategory.code : '-') + ' - ' + (item.subcategory != null ? item.subcategory.name : '-') + ' (' + item.itemSize.label + ')'}"></label>
                             </div>
                             <div class="item-checklist-row" th:if="${#lists.isEmpty(items)}">
                                 <span class="text-muted">No hi ha EPIs disponibles.</span>

@@ -16,48 +16,9 @@
 <div th:replace="~{fragments/header :: navbar}"></div>
 
 <div class="container mt-5">
-    <!-- stats -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <h5 class="card-title mb-2 fs-5">Estoc Total</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${totalStock}">0</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <h5 class="card-title mb-2 fs-5">Alertes d'Estoc Baix</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${lowStockAlerts}">0</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <h5 class="card-title mb-2 fs-5">Comandes Pendents</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${pendingOrders}">0</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card h-100 border-0" style="background-color: #1e1e1e; border-left: 4px solid #ffb300 !important;">
-                <div class="card-body d-flex flex-column justify-content-between p-3">
-                    <h5 class="card-title mb-2 fs-5">Entregues Avui</h5>
-                    <h2 class="display-6 text-white fw-bold mb-0 stat-value" th:text="${deliveriesToday}">0</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Accions raapides -->
     <div class="row mt-5">
-        <h4 class="mb-4 text-white">Accions Ràpides</h4>
+        <h4 class="mb-4 text-white">Accions ràpides</h4>
 
         <div class="col-md-6 mb-3">
             <a th:href="@{/handovers(open='add')}" class="card border-0 hover-scale text-decoration-none action-card">
@@ -69,8 +30,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h5 class="text-white mb-1">Nova Entrega</h5>
-                        <p class="text-muted mb-0">Registra Una Nova Entrega de Material</p>
+                        <h5 class="text-white mb-1">Nova entrega</h5>
+                        <p class="text-muted mb-0">Registra una nova entrega de material</p>
                     </div>
                 </div>
             </a>
@@ -85,8 +46,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h5 class="text-white mb-1">Afegeix a l'Inventari</h5>
-                        <p class="text-muted mb-0">Registra Nou Material al Sistema</p>
+                        <h5 class="text-white mb-1">Afegeix a l'inventari</h5>
+                        <p class="text-muted mb-0">Registra nou material al sistema</p>
                     </div>
                 </div>
             </a>
@@ -104,8 +65,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h5 class="text-white mb-1">Nova Comanda</h5>
-                        <p class="text-muted mb-0">Registra Una Nova Comanda de Compra</p>
+                        <h5 class="text-white mb-1">Nova comanda</h5>
+                        <p class="text-muted mb-0">Registra una nova comanda de compra</p>
                     </div>
                 </div>
             </a>
@@ -121,8 +82,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h5 class="text-white mb-1">Nova Compra / Albarà</h5>
-                        <p class="text-muted mb-0">Registra la Recepció d'un Albarà</p>
+                        <h5 class="text-white mb-1">Nova compra / albarà</h5>
+                        <p class="text-muted mb-0">Registra la recepció d'un albarà</p>
                     </div>
                 </div>
             </a>
@@ -131,7 +92,7 @@
 
     <!-- Activitat recetn -->
     <div class="row mt-5 mb-5">
-        <h4 class="mb-4 text-white">Activitat Recent</h4>
+        <h4 class="mb-4 text-white">Activitat recent</h4>
 
         <div class="col-12">
             <div class="card border-0 shadow-sm" style="background-color: #1e1e1e; border-radius: 8px; overflow: hidden;">
@@ -155,7 +116,7 @@
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(recentActivity)}">
-                            <td colspan="3" class="text-center text-muted py-5">No s'ha Trobat Activitat Recent...</td>
+                            <td colspan="3" class="text-center text-muted py-5">No s'ha trobat activitat recent...</td>
                         </tr>
                         </tbody>
                     </table>

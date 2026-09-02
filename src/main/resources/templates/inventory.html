@@ -54,51 +54,61 @@
         </form>
     </div>
 
-    <div class="card border-0 shadow-sm table-card">
-        <div class="table-responsive">
-            <table class="table table-dark table-hover mb-0">
-                <thead>
-                <tr>
-                    <th class="py-3 px-4 border-bottom border-secondary">Codi</th>
-                    <th class="py-3 px-4 border-bottom border-secondary">Subcategoria</th>
-                    <th class="py-3 px-4 border-bottom border-secondary">Categoria</th>
-                    <th class="py-3 px-4 border-bottom border-secondary">Talla</th>
-                    <th class="py-3 px-4 border-bottom border-secondary">Marca</th>
-                    <th class="py-3 px-4 border-bottom border-secondary">Preu</th>
-                    <th class="py-3 px-4 border-bottom border-secondary">Ubicació</th>
-                    <th class="py-3 px-4 border-bottom border-secondary text-end">Accions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="item : ${items}" th:id="'item-' + ${item.id}">
-                    <td class="py-3 px-4 align-middle fw-bold" th:text="${item.code}"></td>
-                    <td class="py-3 px-4 align-middle" th:text="${item.subcategory != null ? item.subcategory.name : '-'}"></td>
-                    <td class="py-3 px-4 align-middle" th:text="${item.category != null ? item.category.name : '-'}"></td>
-                    <td class="py-3 px-4 align-middle" th:text="${item.itemSize}"></td>
-                    <td class="py-3 px-4 align-middle" th:text="${item.brand}"></td>
-                    <td class="py-3 px-4 align-middle" th:text="${#numbers.formatDecimal(item.price, 1, 2) + ' €'}"></td>
-                    <td class="py-3 px-4 align-middle">
-                        <span th:if="${item.location != null}"
-                              class="location-badge"
-                              th:classappend="${#strings.toLowerCase(item.location.name) == 'lleida'} ? ' location-badge-lleida' : (${#strings.toLowerCase(item.location.name) == 'barcelona'} ? ' location-badge-barcelona' : ' location-badge-default')"
-                              th:text="${item.location.name}"></span>
-                        <span th:if="${item.location == null}" class="text-muted">Sense ubicació</span>
-                    </td>
-                    <td class="py-3 px-4 align-middle">
-                        <div class="d-flex justify-content-end align-items-center gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editItemModal' + ${item.id}">Editar</button>
-                            <form th:action="@{/inventory/delete/{id}(id=${item.id})}" method="post" class="delete-form">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(items)}">
-                    <td colspan="8" class="text-center text-muted py-5">No s'han trobat articles.</td>
-                </tr>
-                </tbody>
-            </table>
+    <div class="card border-0 shadow-sm table-card mb-4" th:each="group : ${groupedItems}">
+        <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2 subcategory-header"
+             data-bs-toggle="collapse"
+             th:data-bs-target="'#subcategoryCollapse' + ${group.subcategory.id}"
+             th:attr="aria-controls='subcategoryCollapse' + ${group.subcategory.id}"
+             role="button" tabindex="0" aria-expanded="false">
+            <div class="d-flex align-items-center gap-2">
+                <span class="size-accordion-chevron">▸</span>
+                <div>
+                    <h5 class="text-white mb-1" th:text="${group.subcategory.name}"></h5>
+                    <div class="text-muted" style="font-size: 0.85rem;">
+                        <span th:text="${group.subcategory.category != null ? group.subcategory.category.name : '-'}"></span>
+                        <span> · Codi: </span><span th:text="${group.subcategory.code}"></span>
+                        <span> · Marca: </span><span th:text="${group.subcategory.brand}"></span>
+                    </div>
+                </div>
+            </div>
+            <span class="location-badge location-badge-default size-total-badge" th:text="${group.totalCount + ' unitats'}"></span>
         </div>
+
+        <div class="collapse" th:id="'subcategoryCollapse' + ${group.subcategory.id}">
+            <div class="size-accordion-item" th:each="sizeEntry : ${group.sizeGroups}">
+                <div class="px-4 py-2 d-flex justify-content-between align-items-center" style="background-color: #181818;">
+                    <span class="text-white fw-bold" th:text="'Talla ' + ${sizeEntry.key.label}"></span>
+                    <span class="text-muted size-count-badge" th:text="${sizeEntry.value.size() + ' unitats'}"></span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0">
+                        <tbody>
+                        <tr th:each="item : ${sizeEntry.value}" th:id="'item-' + ${item.id}">
+                            <td class="py-2 px-4 align-middle" th:text="${#numbers.formatDecimal(item.price, 1, 2) + ' €'}"></td>
+                            <td class="py-2 px-4 align-middle">
+                                <span th:if="${item.location != null}"
+                                      class="location-badge"
+                                      th:classappend="${#strings.toLowerCase(item.location.name) == 'lleida'} ? ' location-badge-lleida' : (${#strings.toLowerCase(item.location.name) == 'barcelona'} ? ' location-badge-barcelona' : ' location-badge-default')"
+                                      th:text="${item.location.name}"></span>
+                                <span th:if="${item.location == null}" class="text-muted">Sense ubicació</span>
+                            </td>
+                            <td class="py-2 px-4 align-middle text-end">
+                                <div class="d-flex justify-content-end align-items-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editItemModal' + ${item.id}">Editar</button>
+                                    <form th:action="@{/inventory/delete/{id}(id=${item.id})}" method="post" class="delete-form">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm table-card" th:if="${#lists.isEmpty(items)}">
+        <div class="text-center text-muted py-5">No s'han trobat articles.</div>
     </div>
 </div>
 
@@ -106,14 +116,11 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
             <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title text-white" id="addItemModalLabel">Nou Article</h5>
+                <h5 class="modal-title text-white" id="addItemModalLabel">Nou article</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form th:action="@{/inventory}" method="post">
                 <div class="modal-body p-4">
-                    <label for="code">Codi</label>
-                    <input type="text" id="code" name="code" required>
-
                     <label for="categoryId">Categoria</label>
                     <select id="categoryId" name="categoryId" data-cascade-subcategory="subcategoryId" required>
                         <option value="">-- Selecciona categoria --</option>
@@ -121,19 +128,20 @@
                     </select>
 
                     <label for="subcategoryId">Subcategoria</label>
-                    <select id="subcategoryId" name="subcategoryId" required>
+                    <select id="subcategoryId" name="subcategoryId" data-cascade-itemsize="itemSize" required>
                         <option value="">-- Selecciona categoria primer --</option>
                         <option th:each="sub : ${subcategories}"
                                 th:value="${sub.id}"
                                 th:text="${sub.name}"
-                                th:data-category-id="${sub.category != null ? sub.category.id : ''}"></option>
+                                th:data-category-id="${sub.category != null ? sub.category.id : ''}"
+                                th:data-sizes="${sub.allowedSizesCsv}"></option>
                     </select>
 
                     <label for="itemSize">Talla</label>
-                    <input type="text" id="itemSize" name="itemSize" required>
-
-                    <label for="brand">Marca</label>
-                    <input type="text" id="brand" name="brand" required>
+                    <select id="itemSize" name="itemSize" required>
+                        <option value="">-- Selecciona subcategoria primer --</option>
+                        <option th:each="size : ${allSizes}" th:value="${size}" th:text="${size.label}"></option>
+                    </select>
 
                     <label for="price">Preu (€)</label>
                     <input type="number" id="price" name="price" step="0.01" min="0" required>
@@ -142,10 +150,13 @@
                     <select id="locationId" name="locationId" required>
                         <option th:each="loc : ${locations}" th:value="${loc.id}" th:text="${loc.name}"></option>
                     </select>
+
+                    <label for="quantity">Quantitat</label>
+                    <input type="number" id="quantity" name="quantity" step="1" min="1" value="1" required>
                 </div>
                 <div class="modal-footer border-top border-secondary">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
-                    <button type="submit" class="btn">Desar Article</button>
+                    <button type="submit" class="btn">Desar article</button>
                 </div>
             </form>
         </div>
@@ -157,16 +168,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
                 <div class="modal-header border-bottom border-secondary">
-                    <h5 class="modal-title text-white">Editar Article</h5>
+                    <h5 class="modal-title text-white">Editar article</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form th:action="@{/inventory/edit/{id}(id=${item.id})}" method="post">
                     <div class="modal-body p-4">
-                        <label>Codi</label>
-                        <input type="text" name="code" th:value="${item.code}" required>
-
                         <label>Categoria</label>
-                        <select name="categoryId" th:id="'editCategoryId' + ${item.id}" th:data-cascade-subcategory="'editSubcategoryId' + ${item.id}" required>
+                        <select name="categoryId" th:id="'editCategoryId' + ${item.id}"
+                                th:data-cascade-subcategory="'editSubcategoryId' + ${item.id}" required>
                             <option th:each="cat : ${categories}"
                                     th:value="${cat.id}"
                                     th:text="${cat.name}"
@@ -174,19 +183,23 @@
                         </select>
 
                         <label>Subcategoria</label>
-                        <select name="subcategoryId" th:id="'editSubcategoryId' + ${item.id}" required>
+                        <select name="subcategoryId" th:id="'editSubcategoryId' + ${item.id}"
+                                th:data-cascade-itemsize="'editItemSize' + ${item.id}" required>
                             <option th:each="sub : ${subcategories}"
                                     th:value="${sub.id}"
                                     th:text="${sub.name}"
                                     th:data-category-id="${sub.category != null ? sub.category.id : ''}"
+                                    th:data-sizes="${sub.allowedSizesCsv}"
                                     th:selected="${item.subcategory != null and item.subcategory.id == sub.id}"></option>
                         </select>
 
                         <label>Talla</label>
-                        <input type="text" name="itemSize" th:value="${item.itemSize}" required>
-
-                        <label>Marca</label>
-                        <input type="text" name="brand" th:value="${item.brand}" required>
+                        <select name="itemSize" th:id="'editItemSize' + ${item.id}" required>
+                            <option th:each="size : ${allSizes}"
+                                    th:value="${size}"
+                                    th:text="${size.label}"
+                                    th:selected="${item.itemSize == size}"></option>
+                        </select>
 
                         <label>Preu (€)</label>
                         <input type="number" name="price" step="0.01" min="0" th:value="${item.price}" required>
@@ -201,7 +214,7 @@
                     </div>
                     <div class="modal-footer border-top border-secondary">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
-                        <button type="submit" class="btn">Actualitzar Article</button>
+                        <button type="submit" class="btn">Actualitzar article</button>
                     </div>
                 </form>
             </div>
@@ -227,6 +240,26 @@
         });
 
         subcategorySelect.value = keepValue ? previousValue : '';
+        subcategorySelect.dispatchEvent(new Event('change'));
+    }
+
+    function filterItemSizes(categorySelectId, sizeSelectId, keepValue) {
+        const categorySelect = document.getElementById(categorySelectId);
+        const sizeSelect = document.getElementById(sizeSelectId);
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const allowedSizes = selectedOption && selectedOption.getAttribute('data-sizes')
+            ? selectedOption.getAttribute('data-sizes').split(',')
+            : [];
+        const previousValue = sizeSelect.value;
+
+        Array.from(sizeSelect.options).forEach(function (option) {
+            if (!option.value) return;
+            const matches = allowedSizes.includes(option.value);
+            option.hidden = !matches;
+            option.disabled = !matches;
+        });
+
+        sizeSelect.value = keepValue && allowedSizes.includes(previousValue) ? previousValue : '';
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -235,6 +268,34 @@
             filterSubcategories(categorySelect.id, subSelectId, true);
             categorySelect.addEventListener('change', function () {
                 filterSubcategories(categorySelect.id, subSelectId, false);
+            });
+        });
+
+        document.querySelectorAll('[data-cascade-itemsize]').forEach(function (categorySelect) {
+            const sizeSelectId = categorySelect.getAttribute('data-cascade-itemsize');
+            filterItemSizes(categorySelect.id, sizeSelectId, true);
+            categorySelect.addEventListener('change', function () {
+                filterItemSizes(categorySelect.id, sizeSelectId, false);
+            });
+        });
+
+        document.querySelectorAll('.subcategory-header').forEach(function (toggle) {
+            const targetId = toggle.getAttribute('data-bs-target');
+            const target = document.querySelector(targetId);
+            if (!target) return;
+            target.addEventListener('show.bs.collapse', function () {
+                toggle.classList.add('expanded');
+                toggle.setAttribute('aria-expanded', 'true');
+            });
+            target.addEventListener('hide.bs.collapse', function () {
+                toggle.classList.remove('expanded');
+                toggle.setAttribute('aria-expanded', 'false');
+            });
+            toggle.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    toggle.click();
+                }
             });
         });
     });

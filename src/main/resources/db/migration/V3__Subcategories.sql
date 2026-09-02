@@ -21,14 +21,3 @@ SET subcategory_id = (
 WHERE subcategory IS NOT NULL AND category_id IS NOT NULL;
 
 ALTER TABLE clothing_item DROP COLUMN subcategory;
-
--- Subcategories de mostra perquè els desplegables no comencin buits
-INSERT INTO subcategory (name, category_id) SELECT 'Botes', id FROM category WHERE name = 'Calçat de seguretat';
-INSERT INTO subcategory (name, category_id) SELECT 'Sabates', id FROM category WHERE name = 'Calçat de seguretat';
-INSERT INTO subcategory (name, category_id) SELECT 'Guants de nitril', id FROM category WHERE name = 'Guants';
-INSERT INTO subcategory (name, category_id) SELECT 'Guants anticall', id FROM category WHERE name = 'Guants';
-INSERT INTO subcategory (name, category_id) SELECT 'Ulleres panoràmiques', id FROM category WHERE name = 'Ulleres de protecció';
-INSERT INTO subcategory (name, category_id) SELECT 'Casc de seguretat', id FROM category WHERE name = 'Casc';
-INSERT INTO subcategory (name, category_id) SELECT 'Armilla reflectant', id FROM category WHERE name = 'Roba d''alta visibilitat';
-INSERT INTO subcategory (name, category_id) SELECT 'Taps auditius', id FROM category WHERE name = 'Protecció auditiva';
-INSERT INTO subcategory (name, category_id) SELECT 'Arnès complet', id FROM category WHERE name = 'Arnès de seguretat';

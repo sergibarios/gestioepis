@@ -11,6 +11,5 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
     List<PurchaseOrder> findByNameContainingIgnoreCase(String name);
     List<PurchaseOrder> findAllByOrderByOrderDateDesc();
     List<PurchaseOrder> findAllByOrderByOrderDateAsc();
-    long countByDeliveryNotesIsEmpty();
     List<PurchaseOrder> findTop5ByOrderByOrderDateDesc();
 }
