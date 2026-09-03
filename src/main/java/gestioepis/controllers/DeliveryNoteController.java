@@ -2,8 +2,7 @@ package gestioepis.controllers;
 
 import gestioepis.models.DeliveryNote;
 import gestioepis.models.PurchaseOrder;
-import gestioepis.repositories.DeliveryNoteRepository;
-import gestioepis.repositories.PurchaseOrderRepository;
+import gestioepis.repositories.*;
 import gestioepis.services.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,6 +27,15 @@ public class DeliveryNoteController {
     @Autowired
     private StorageService storageService;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private SubcategoryRepository subcategoryRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
+
     @GetMapping("/purchases")
     public String purchases(
             @RequestParam(required = false, defaultValue = "desc") String sort,
@@ -48,6 +56,10 @@ public class DeliveryNoteController {
         model.addAttribute("orders", orders);
         model.addAttribute("sort", sort);
         model.addAttribute("selectedOrderId", orderId);
+        model.addAttribute("categories", categoryRepository.findAll());
+        model.addAttribute("subcategories", subcategoryRepository.findAll());
+        model.addAttribute("locations", locationRepository.findAll());
+        model.addAttribute("allSizes", gestioepis.models.Talla.values());
         return "purchases";
     }
 

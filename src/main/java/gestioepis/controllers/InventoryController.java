@@ -1,12 +1,10 @@
 package gestioepis.controllers;
 
 import gestioepis.models.ClothingItem;
+import gestioepis.models.DeliveryNote;
 import gestioepis.models.Subcategory;
 import gestioepis.models.Talla;
-import gestioepis.repositories.CategoryRepository;
-import gestioepis.repositories.ClothingItemRepository;
-import gestioepis.repositories.LocationRepository;
-import gestioepis.repositories.SubcategoryRepository;
+import gestioepis.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +33,9 @@ public class InventoryController {
     @Autowired
     private SubcategoryRepository subcategoryRepository;
 
+    @Autowired
+    private DeliveryNoteRepository deliveryNoteRepository;
+
     @GetMapping("/inventory")
     public String inventoryTotal(@RequestParam(required = false) String categoryId, Model model) {
         List<ClothingItem> items = clothingItemRepository.findByHandoverIsNull();
@@ -57,11 +58,19 @@ public class InventoryController {
             @RequestParam double price,
             @RequestParam Long locationId,
             @RequestParam(defaultValue = "1") int quantity,
+            @RequestParam(required = false) Long deliveryNoteId,
+            @RequestParam(required = false, defaultValue = "inventory") String redirectSource,
             RedirectAttributes redirectAttributes) {
 
         var category = categoryRepository.findById(categoryId).orElseThrow();
         var subcategory = subcategoryRepository.findById(subcategoryId).orElseThrow();
         var location = locationRepository.findById(locationId).orElseThrow();
+
+        // Buscar el albarán si se ha indicado
+        DeliveryNote deliveryNote = (deliveryNoteId != null)
+                ? deliveryNoteRepository.findById(deliveryNoteId).orElse(null)
+                : null;
+
         int itemsToCreate = Math.max(1, quantity);
 
         for (int i = 0; i < itemsToCreate; i++) {
@@ -71,12 +80,18 @@ public class InventoryController {
             item.setItemSize(itemSize);
             item.setPrice(price);
             item.setLocation(location);
+            item.setDeliveryNote(deliveryNote); // Asigna el albarán
             clothingItemRepository.save(item);
         }
 
         redirectAttributes.addFlashAttribute("toastMessage", itemsToCreate > 1
                 ? itemsToCreate + " articles afegits correctament."
                 : "Article afegit correctament.");
+
+        // Redirección dinámica según el origen
+        if ("purchases".equalsIgnoreCase(redirectSource)) {
+            return "redirect:/purchases";
+        }
         return "redirect:/inventory";
     }
 
@@ -103,9 +118,17 @@ public class InventoryController {
     }
 
     @PostMapping("/inventory/delete/{id}")
-    public String deleteItem(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteItem(
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "inventory") String redirectSource,
+            RedirectAttributes redirectAttributes) {
+
         clothingItemRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("toastMessage", "Article eliminat.");
+        redirectAttributes.addFlashAttribute("toastMessage", "Article eliminat correctament.");
+
+        if ("purchases".equalsIgnoreCase(redirectSource)) {
+            return "redirect:/purchases";
+        }
         return "redirect:/inventory";
     }
 
