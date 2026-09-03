@@ -37,7 +37,7 @@ public class InventoryController {
 
     @GetMapping("/inventory")
     public String inventoryTotal(@RequestParam(required = false) String categoryId, Model model) {
-        List<ClothingItem> items = clothingItemRepository.findAll();
+        List<ClothingItem> items = clothingItemRepository.findByHandoverIsNull();
         return renderInventory(items, "all", categoryId, model);
     }
 

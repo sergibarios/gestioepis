@@ -11,4 +11,5 @@ public interface ClothingItemRepository extends JpaRepository<ClothingItem, Long
     List<ClothingItem> findBySubcategory_CodeContainingIgnoreCaseOrSubcategory_NameContainingIgnoreCase(String code, String subcategoryName);
     List<ClothingItem> findByLocationNameIgnoreCase(String locationName);
     List<ClothingItem> findByHandoverIsNull();
+
 }

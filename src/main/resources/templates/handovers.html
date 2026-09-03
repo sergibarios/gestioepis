@@ -55,6 +55,7 @@
                     <th class="py-3 px-4 border-bottom border-secondary">Data</th>
                     <th class="py-3 px-4 border-bottom border-secondary">Persona</th>
                     <th class="py-3 px-4 border-bottom border-secondary">EPIs entregats</th>
+                    <th class="py-3 px-4 border-bottom border-secondary">Accions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,9 +70,15 @@
                             </div>
                         </div>
                     </td>
+                    <td class="py-3 px-4 align-middle text-start">
+                        <form th:action="@{/handovers/delete}" method="post" onsubmit="return confirm('Estàs segur de voler eliminar aquesta entrega?');" class="d-inline">
+                            <input type="hidden" name="id" th:value="${handover.id}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(handovers)}">
-                    <td colspan="3" class="text-center text-muted py-5">No s'han trobat entregues.</td>
+                    <td colspan="4" class="text-center text-muted py-5">No s'han trobat entregues.</td>
                 </tr>
                 </tbody>
             </table>
@@ -80,50 +87,86 @@
 </div>
 
 <div class="modal fade" id="addHandoverModal" data-quick-action="add" tabindex="-1" aria-labelledby="addHandoverModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" style="max-height: 90vh;">
+        <div class="modal-content h-100" style="background-color: #1e1e1e; border: 1px solid #333; display: flex; flex-direction: column;">
+
             <div class="modal-header border-bottom border-secondary">
                 <h5 class="modal-title text-white" id="addHandoverModalLabel">Nova entrega</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="handoverForm" th:action="@{/handovers}" method="post">
-                <div class="modal-body p-4">
 
-                    <div id="handoverStepSelect">
-                        <label for="personSearchInput">Persona</label>
-                        <div class="select-search">
-                            <input type="text" id="personSearchInput" placeholder="Cerca una persona..." autocomplete="off">
-                            <div id="personSearchResults" class="select-search-results d-none">
-                                <div class="select-search-option"
-                                     th:each="person : ${people}"
-                                     th:text="${person.name}"
-                                     th:data-id="${person.id}"
-                                     th:data-name="${person.name}"></div>
+            <form id="handoverForm" th:action="@{/handovers}" method="post" class="d-flex flex-column flex-grow-1 overflow-hidden">
+                <div class="modal-body p-4 d-flex flex-column flex-grow-1 overflow-hidden">
+
+                    <div id="handoverStepSelect" class="d-flex flex-column flex-grow-1 overflow-hidden">
+
+                        <!-- Fila superior: Persona (70%) y Data (30%) -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-8">
+                                <label for="personSearchInput" class="form-label text-warning fw-semibold">Persona</label>
+                                <div class="select-search position-relative">
+                                    <input type="text" id="personSearchInput" class="form-control" style="background-color: #2b2b2b; color: #fff; border: 1px solid #444;" placeholder="Cerca una persona..." autocomplete="off">
+                                    <div id="personSearchResults" class="select-search-results d-none">
+                                        <div class="select-search-option"
+                                             th:each="person : ${people}"
+                                             th:text="${person.name}"
+                                             th:data-id="${person.id}"
+                                             th:data-name="${person.name}"></div>
+                                    </div>
+                                </div>
+                                <div id="personSelected" class="select-search-selected d-none text-success small mt-1"></div>
+                                <input type="hidden" id="personId" name="personId">
+                            </div>
+
+                            <div class="col-4">
+                                <label for="handoverDate" class="form-label text-warning fw-semibold">Data</label>
+                                <input type="date" id="handoverDate" name="handoverDate" class="form-control" style="background-color: #2b2b2b; color: #fff; border: 1px solid #444;" required>
                             </div>
                         </div>
-                        <div id="personSelected" class="select-search-selected d-none"></div>
-                        <input type="hidden" id="personId" name="personId">
 
-                        <label for="handoverDate">Data</label>
-                        <input type="date" id="handoverDate" name="handoverDate" required>
+                        <!-- Fila inferior: Búsqueda y Lista de EPIs expandida -->
+                        <div class="d-flex flex-column flex-grow-1 overflow-hidden mt-2">
+                            <label for="itemSearchInput" class="form-label text-warning fw-semibold mb-1">EPIs a entregar</label>
+                            <input type="text" id="itemSearchInput" class="form-control mb-2" style="background-color: #2b2b2b; color: #fff; border: 1px solid #444;" placeholder="Cerca per codi, subcategoria o mida..." autocomplete="off">
 
-                        <label for="itemSearchInput">EPIs a entregar</label>
-                        <input type="text" id="itemSearchInput" placeholder="Cerca per codi, subcategoria o mida..." autocomplete="off">
-                        <div class="item-checklist-count"><span id="itemSelectedCount">0</span> EPIs seleccionats</div>
-                        <div class="item-checklist" id="itemChecklist">
-                            <div class="item-checklist-row"
-                                 th:each="item : ${items}"
-                                 th:data-search="${#strings.toLowerCase((item.subcategory != null ? item.subcategory.code : '') + ' ' + (item.subcategory != null ? item.subcategory.name : '') + ' ' + item.itemSize.label)}">
-                                <input type="checkbox" name="itemIds" th:value="${item.id}" th:id="'item-' + ${item.id}">
-                                <label th:for="'item-' + ${item.id}"
-                                       th:text="${(item.subcategory != null ? item.subcategory.code : '-') + ' - ' + (item.subcategory != null ? item.subcategory.name : '-') + ' (' + item.itemSize.label + ')'}"></label>
-                            </div>
-                            <div class="item-checklist-row" th:if="${#lists.isEmpty(items)}">
-                                <span class="text-muted">No hi ha EPIs disponibles.</span>
+                            <div class="item-checklist-count small text-muted mb-2"><span id="itemSelectedCount">0</span> EPIs seleccionats</div>
+
+
+                            <div class="item-checklist border border-secondary rounded flex-grow-1 overflow-auto" id="itemChecklist" style="max-height: none; background-color: #181818;">
+                                <th:block th:each="entrySubcat : ${items}">
+                                    <div th:each="entryTalla : ${entrySubcat.value}"
+                                         class="item-checklist-row d-flex align-items-center justify-content-between py-2 px-3 border-bottom border-secondary"
+                                         th:data-search="${#strings.toLowerCase((entrySubcat.key != null ? entrySubcat.key.code + ' ' + entrySubcat.key.name : '') + ' ' + entryTalla.key.label)}">
+
+                                        <div>
+                                            <div class="fw-bold text-warning"
+                                                 th:text="${entrySubcat.key != null ? (entrySubcat.key.code + ' - ' + entrySubcat.key.name) : 'Sense subcategoria'}"></div>
+                                            <small class="text-white"
+                                                   th:text="${'Mida: ' + entryTalla.key.label + ' (' + entryTalla.value.size() + ' disponible/s)'}"></small>
+                                        </div>
+
+                                        <div>
+                                            <input type="number"
+                                                   class="form-control form-control-sm item-qty-input"
+                                                   style="width: 70px; background-color: #2b2b2b; color: #fff; border: 1px solid #444;"
+                                                   min="0"
+                                                   th:max="${entryTalla.value.size()}"
+                                                   value="0"
+                                                   th:data-item-ids="${#strings.arrayJoin(entryTalla.value.![id], ',')}">
+                                        </div>
+                                    </div>
+                                </th:block>
+
+                                <div id="selectedItemIdsContainer"></div>
+
+                                <div class="item-checklist-row py-3 text-center" th:if="${#maps.isEmpty(items)}">
+                                    <span class="text-muted">No hi ha EPIs disponibles.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Resumen del modal (Paso 2) -->
                     <div id="handoverStepSummary" class="handover-summary d-none">
                         <dl class="mb-0">
                             <dt>Persona</dt>
@@ -138,11 +181,12 @@
                     </div>
 
                 </div>
+
                 <div class="modal-footer border-top border-secondary">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel·lar</button>
                     <button type="button" class="btn d-none" id="handoverBackBtn">Enrere</button>
-                    <button type="button" class="btn" id="handoverReviewBtn">Revisar</button>
-                    <button type="submit" class="btn d-none" id="handoverConfirmBtn">Confirmar entrega</button>
+                    <button type="button" class="btn btn-primary" id="handoverReviewBtn">Revisar</button>
+                    <button type="submit" class="btn btn-success d-none" id="handoverConfirmBtn">Confirmar entrega</button>
                 </div>
             </form>
         </div>

@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const itemSearchInput = document.getElementById('itemSearchInput');
     const itemChecklist = document.getElementById('itemChecklist');
-    const itemRows = itemChecklist.querySelectorAll('.item-checklist-row[data-search]');
     const itemSelectedCount = document.getElementById('itemSelectedCount');
 
     const stepSelect = document.getElementById('handoverStepSelect');
@@ -23,12 +22,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('handoverBackBtn');
     const confirmBtn = document.getElementById('handoverConfirmBtn');
 
-    function checkedItemBoxes() {
-        return itemChecklist.querySelectorAll('input[type="checkbox"]:checked');
+    // --- Funciones auxiliares para trabajar con cantidades ---
+
+    function getQtyInputs() {
+        return itemChecklist.querySelectorAll('.item-qty-input');
+    }
+
+    function getTotalSelectedItems() {
+        let total = 0;
+        getQtyInputs().forEach(input => {
+            total += parseInt(input.value) || 0;
+        });
+        return total;
     }
 
     function updateSelectedCount() {
-        itemSelectedCount.textContent = checkedItemBoxes().length;
+        itemSelectedCount.textContent = getTotalSelectedItems();
     }
 
     // --- Cerca de persona ---
@@ -74,18 +83,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Cerca i selecció d'EPIs ---
+    // --- Cerca dinàmica d'EPIs i gestió de filtres i grups ---
 
     itemSearchInput.addEventListener('input', () => {
         const query = itemSearchInput.value.trim().toLowerCase();
-        itemRows.forEach(row => {
-            const matches = query.length === 0 || row.dataset.search.includes(query);
+        const rows = itemChecklist.querySelectorAll('.item-checklist-row[data-search]');
+
+        rows.forEach(row => {
+            const searchText = row.dataset.search || '';
+            const matches = query === '' || searchText.includes(query);
             row.classList.toggle('d-none', !matches);
         });
     });
 
-    itemChecklist.addEventListener('change', (e) => {
-        if (e.target.matches('input[type="checkbox"]')) {
+    itemChecklist.addEventListener('input', (e) => {
+        if (e.target.classList.contains('item-qty-input')) {
             updateSelectedCount();
         }
     });
@@ -101,23 +113,28 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Selecciona una data.');
             return;
         }
-        const checked = checkedItemBoxes();
-        if (checked.length === 0) {
+
+        const totalItems = getTotalSelectedItems();
+        if (totalItems === 0) {
             alert('Selecciona almenys un EPI.');
             return;
         }
 
         document.getElementById('summaryPerson').textContent = personSearchInput.value;
         document.getElementById('summaryDate').textContent = handoverDateInput.value;
-        document.getElementById('summaryCount').textContent = checked.length;
+        document.getElementById('summaryCount').textContent = totalItems;
 
         const list = document.getElementById('summaryItemsList');
         list.innerHTML = '';
-        checked.forEach(checkbox => {
-            const label = itemChecklist.querySelector(`label[for="${checkbox.id}"]`);
-            const li = document.createElement('li');
-            li.textContent = label ? label.textContent : checkbox.value;
-            list.appendChild(li);
+
+        getQtyInputs().forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            if (qty > 0) {
+                const label = input.closest('.item-checklist-row').querySelector('label');
+                const li = document.createElement('li');
+                li.textContent = `${label ? label.textContent.split('(')[0].trim() : 'EPI'} x${qty}`;
+                list.appendChild(li);
+            }
         });
 
         stepSelect.classList.add('d-none');
@@ -135,13 +152,42 @@ document.addEventListener('DOMContentLoaded', () => {
         reviewBtn.classList.remove('d-none');
     });
 
+    // --- Generació dels inputs ocults al confirmar/enviar el formulari ---
+
+    form.addEventListener('submit', () => {
+        const selectedContainer = document.getElementById('selectedItemIdsContainer');
+        if (selectedContainer) selectedContainer.innerHTML = '';
+
+        getQtyInputs().forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            if (qty > 0 && input.dataset.itemIds) {
+                const availableIds = input.dataset.itemIds.split(',');
+                for (let i = 0; i < qty && i < availableIds.length; i++) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'itemIds';
+                    hiddenInput.value = availableIds[i];
+                    selectedContainer.appendChild(hiddenInput);
+                }
+            }
+        });
+    });
+
     modal.addEventListener('hidden.bs.modal', () => {
         form.reset();
         personIdInput.value = '';
         personSelected.classList.add('d-none');
         personSearchResults.classList.add('d-none');
         itemSearchInput.value = '';
-        itemRows.forEach(row => row.classList.remove('d-none'));
+
+        // Restablir la visibilitat de grups i subcategories
+        itemChecklist.querySelectorAll('.subcat-group, .item-checklist-row').forEach(el => {
+            el.classList.remove('d-none');
+        });
+
+        const selectedContainer = document.getElementById('selectedItemIdsContainer');
+        if (selectedContainer) selectedContainer.innerHTML = '';
+
         updateSelectedCount();
 
         stepSummary.classList.add('d-none');
