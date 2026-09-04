@@ -76,33 +76,47 @@
 
         <div class="collapse" th:id="'subcategoryCollapse' + ${group.subcategory.id}">
             <div class="size-accordion-item" th:each="sizeEntry : ${group.sizeGroups}">
-                <div class="px-4 py-2 d-flex justify-content-between align-items-center" style="background-color: #181818;">
-                    <span class="text-white fw-bold" th:text="'Talla ' + ${sizeEntry.key.label}"></span>
+                <!-- Cabecera de la Talla (Clicable para desplegar la tabla de artículos) -->
+                <div class="px-4 py-2 d-flex justify-content-between align-items-center size-header"
+                     style="background-color: #181818; cursor: pointer;"
+                     data-bs-toggle="collapse"
+                     th:data-bs-target="'#sizeCollapse' + ${group.subcategory.id} + '-' + ${sizeEntry.key}"
+                     aria-expanded="false"
+                     role="button">
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="size-accordion-chevron text-muted" style="font-size: 0.8rem;">▸</span>
+                        <span class="text-white fw-bold" th:text="'Talla ' + ${sizeEntry.key.label}"></span>
+                    </div>
                     <span class="text-muted size-count-badge" th:text="${sizeEntry.value.size() + ' unitats'}"></span>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover mb-0">
-                        <tbody>
-                        <tr th:each="item : ${sizeEntry.value}" th:id="'item-' + ${item.id}">
-                            <td class="py-2 px-4 align-middle" th:text="${#numbers.formatDecimal(item.price, 1, 2) + ' €'}"></td>
-                            <td class="py-2 px-4 align-middle">
-                                <span th:if="${item.location != null}"
-                                      class="location-badge"
-                                      th:classappend="${#strings.toLowerCase(item.location.name) == 'lleida'} ? ' location-badge-lleida' : (${#strings.toLowerCase(item.location.name) == 'barcelona'} ? ' location-badge-barcelona' : ' location-badge-default')"
-                                      th:text="${item.location.name}"></span>
-                                <span th:if="${item.location == null}" class="text-muted">Sense ubicació</span>
-                            </td>
-                            <td class="py-2 px-4 align-middle text-end">
-                                <div class="d-flex justify-content-end align-items-center gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editItemModal' + ${item.id}">Editar</button>
-                                    <form th:action="@{/inventory/delete/{id}(id=${item.id})}" method="post" class="delete-form">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+
+                <!-- Contenido Plegable con las Filas de Artículos de esta Talla -->
+                <div class="collapse" th:id="'sizeCollapse' + ${group.subcategory.id} + '-' + ${sizeEntry.key}">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0">
+                            <tbody>
+                            <tr th:each="item : ${sizeEntry.value}" th:id="'item-' + ${item.id}">
+                                <td class="py-2 px-4 align-middle" th:text="${#numbers.formatDecimal(item.price, 1, 2) + ' €'}"></td>
+                                <td class="py-2 px-4 align-middle">
+                        <span th:if="${item.location != null}"
+                              class="location-badge"
+                              th:classappend="${#strings.toLowerCase(item.location.name) == 'lleida'} ? ' location-badge-lleida' : (${#strings.toLowerCase(item.location.name) == 'barcelona'} ? ' location-badge-barcelona' : ' location-badge-default')"
+                              th:text="${item.location.name}"></span>
+                                    <span th:if="${item.location == null}" class="text-muted">Sense ubicació</span>
+                                </td>
+                                <td class="py-2 px-4 align-middle text-end">
+                                    <div class="d-flex justify-content-end align-items-center gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#editItemModal' + ${item.id}">Editar</button>
+                                        <form th:action="@{/inventory/delete/{id}(id=${item.id})}" method="post" class="delete-form">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -29,6 +29,6 @@ public class DeliveryNote {
     @JoinColumn(name = "purchase_order_id")
     private PurchaseOrder purchaseOrder;
 
-    @OneToMany(mappedBy = "deliveryNote")
+    @OneToMany(mappedBy = "deliveryNote", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClothingItem> receivedItems;
 }

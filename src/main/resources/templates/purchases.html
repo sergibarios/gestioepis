@@ -18,9 +18,6 @@
 <div class="container mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4 toolbar-row">
         <h2 class="text-white m-0 toolbar-title">Compres</h2>
-        <div class="search-wrapper-inline">
-            <div th:replace="~{fragments/search :: searchBar}"></div>
-        </div>
         <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addPurchaseModal">
             <span class="btn-icon">+</span> Afegir compra
         </button>
@@ -110,8 +107,6 @@
                             <div class="collapse" th:id="'noteCollapse' + ${note.id}" style="background-color: #161616;">
                                 <div class="p-3 px-4 d-flex justify-content-between align-items-center border-top border-secondary">
                                     <div>
-                                        <h6 class="text-white mb-2 fw-bold" style="font-size: 0.85rem;">ARTICLES REBUTS EN AQUEST ALBARÀ</h6>
-
                                         <div th:if="${note.receivedItems != null and !note.receivedItems.isEmpty()}" class="d-flex flex-wrap gap-2">
                                             <div th:each="item : ${note.receivedItems}"
                                                  class="p-2 rounded border border-secondary d-flex align-items-center gap-2"

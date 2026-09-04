@@ -17,9 +17,6 @@
 <div class="container mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center mt-4 mb-4 toolbar-row">
         <h2 class="text-white m-0 toolbar-title">Entregues</h2>
-        <div class="search-wrapper-inline">
-            <div th:replace="~{fragments/search :: searchBar}"></div>
-        </div>
         <button type="button" class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addHandoverModal">
             <span class="btn-icon">+</span> Afegir entrega
         </button>
@@ -62,12 +59,18 @@
                 <tr th:each="handover : ${handovers}" th:id="'handover-' + ${handover.id}">
                     <td class="py-3 px-4 align-middle" th:text="${handover.handoverDate}"></td>
                     <td class="py-3 px-4 align-middle fw-bold" th:text="${handover.person.name}"></td>
+                    <!-- Celda en el <tbody> de handovers.html -->
                     <td class="py-3 px-4 align-middle">
-                        <div th:if="${handover.handedItems != null and !handover.handedItems.isEmpty()}">
-                            <div th:each="item : ${handover.handedItems}" class="handover-item-chip">
-                                <span class="text-white" style="font-size: 0.85rem;"
-                                      th:text="${(item.subcategory != null ? item.subcategory.code : '-') + ' - ' + (item.subcategory != null ? item.subcategory.name : '-') + ' (' + item.itemSize.label + ')'}"></span>
-                            </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-secondary"
+                                  th:text="${(handover.handedItems != null ? handover.handedItems.size() : 0) + ' articles'}">
+                            </span>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-info"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#viewItemsModal' + ${handover.id}">
+                                Veure EPIs
+                            </button>
                         </div>
                     </td>
                     <td class="py-3 px-4 align-middle text-start">
@@ -192,6 +195,42 @@
         </div>
     </div>
 </div>
+
+<th:block th:each="handover : ${handovers}">
+    <div class="modal fade" th:id="'viewItemsModal' + ${handover.id}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <div class="modal-header border-bottom border-secondary">
+                    <div>
+                        <h5 class="modal-title text-white">EPIs lliurats</h5>
+                        <small class="text-muted" th:text="${handover.person != null ? handover.person.name : ''} + ' · ' + ${handover.handoverDate}"></small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div th:if="${handover.handedItems != null and !handover.handedItems.isEmpty()}" class="d-flex flex-column gap-2">
+                        <div th:each="item : ${handover.handedItems}"
+                             class="p-2 px-3 rounded border border-secondary d-flex justify-content-between align-items-center"
+                             style="background-color: #262626;">
+                            <div>
+                                <div class="text-white fw-semibold"
+                                     th:text="${(item.subcategory != null ? item.subcategory.code + ' - ' + item.subcategory.name : 'Sense subcategoria')}"></div>
+                                <small class="text-muted" th:text="${item.location != null ? item.location.name : ''}"></small>
+                            </div>
+                            <span class="badge bg-warning text-dark" th:text="${'Talla ' + item.itemSize.label}"></span>
+                        </div>
+                    </div>
+                    <div th:if="${handover.handedItems == null or handover.handedItems.isEmpty()}" class="text-muted text-center py-3">
+                        Sense articles associats.
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tancar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/search.js}"></script>

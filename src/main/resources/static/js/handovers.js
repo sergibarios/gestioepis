@@ -130,9 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
         getQtyInputs().forEach(input => {
             const qty = parseInt(input.value) || 0;
             if (qty > 0) {
-                const label = input.closest('.item-checklist-row').querySelector('label');
+                const row = input.closest('.item-checklist-row');
+                const nameElement = row.querySelector('.fw-bold');
+                const subcategoryText = nameElement ? nameElement.textContent.trim() : 'EPI';
+                const sizeElement = row.querySelector('small');
+                let sizeText = '';
+                if (sizeElement) {
+                    sizeText = sizeElement.textContent.split('(')[0].trim();
+                }
                 const li = document.createElement('li');
-                li.textContent = `${label ? label.textContent.split('(')[0].trim() : 'EPI'} x${qty}`;
+                li.className = 'py-1 border-bottom border-secondary text-white';
+                li.textContent = `${subcategoryText} — ${sizeText} x${qty}`;
                 list.appendChild(li);
             }
         });
